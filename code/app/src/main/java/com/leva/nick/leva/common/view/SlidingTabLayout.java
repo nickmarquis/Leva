@@ -28,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.TextView;
+import android.widget.LinearLayout;
 
 /**
  * To be used with ViewPager to provide a tab indicator component which give constant feedback as to
@@ -66,8 +67,8 @@ public class SlidingTabLayout extends HorizontalScrollView {
     }
 
     private static final int TITLE_OFFSET_DIPS = 24;
-    private static final int TAB_VIEW_PADDING_DIPS = 16;
-    private static final int TAB_VIEW_TEXT_SIZE_SP = 12;
+    private static final int TAB_VIEW_PADDING_DIPS = 10;
+    private static final int TAB_VIEW_TEXT_SIZE_SP = 13;
 
     private int mTitleOffset;
 
@@ -220,7 +221,8 @@ public class SlidingTabLayout extends HorizontalScrollView {
             tabTitleView.setText(adapter.getPageTitle(i));
             tabView.setOnClickListener(tabClickListener);
 
-            mTabStrip.addView(tabView);
+            //mTabStrip.addView(tabView);
+            mTabStrip.addView(tabView, new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1.0f));
         }
     }
 
