@@ -35,10 +35,16 @@ public class GoogleMapF extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_google_map, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_google_map, container, false);
+    }
 
-        mapView = (MapView) v.findViewById(R.id.mapview);
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mapView = (MapView) view.findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
@@ -53,8 +59,6 @@ public class GoogleMapF extends Fragment {
 
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(43.1, -87.9), 10);
         map.animateCamera(cameraUpdate);
-
-        return v;
     }
 
     @Override

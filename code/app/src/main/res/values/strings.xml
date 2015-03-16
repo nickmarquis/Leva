@@ -8,4 +8,8 @@
     <string name="carte">Carte</string>
     <string name="amis">Amis</string>
 
+    <string name="googlemapkey">AIzaSyAw_D-Um7eZNQJ3fG6dgmp3s3EfyJvZiSw</string>
+    <string name="facebookkey">AIzaSyAw_D-</string>
+
+
 </resources>
