@@ -12,7 +12,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,7 +51,8 @@ public class TabFrameF extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
 
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
-        mViewPager.setAdapter(new SampleFragmentPagerAdapter(getChildFragmentManager()));
+        mViewPager.setOffscreenPageLimit(2);
+        mViewPager.setAdapter(new FragmentPagerAdapter(getChildFragmentManager()));
 
         mSlidingTabLayout = (SlidingTabLayout) view.findViewById(R.id.sliding_tabs);
         mSlidingTabLayout.setViewPager(mViewPager);
@@ -102,9 +102,9 @@ public class TabFrameF extends Fragment {
         });
     }
 
-    class SampleFragmentPagerAdapter extends FragmentPagerAdapter {
+    class FragmentPagerAdapter extends android.support.v4.app.FragmentPagerAdapter {
 
-        SampleFragmentPagerAdapter(FragmentManager fm) {
+        FragmentPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 

@@ -3,10 +3,8 @@ package com.leva.nick.leva;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ViewAnimator;
 
 import com.leva.nick.leva.common.activities.SampleActivityBase;
 import com.leva.nick.leva.common.logger.Log;
@@ -45,32 +43,6 @@ public class TabLayoutA extends SampleActivityBase {
         getMenuInflater().inflate(R.menu.menu_tab_layout, menu);
         return true;
     }
-
-//    @Override
-//    public boolean onPrepareOptionsMenu(Menu menu) {
-//        MenuItem logToggle = menu.findItem(R.id.menu_toggle_log);
-//        logToggle.setVisible(findViewById(R.id.sample_output) instanceof ViewAnimator);
-//        logToggle.setTitle(mLogShown ? R.string.sample_hide_log : R.string.sample_show_log);
-//
-//        return super.onPrepareOptionsMenu(menu);
-//    }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch(item.getItemId()) {
-//            case R.id.menu_toggle_log:
-//                mLogShown = !mLogShown;
-//                ViewAnimator output = (ViewAnimator) findViewById(R.id.sample_output);
-//                if (mLogShown) {
-//                    output.setDisplayedChild(1);
-//                } else {
-//                    output.setDisplayedChild(0);
-//                }
-//                supportInvalidateOptionsMenu();
-//                return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
 
     @Override
     public void initializeLogging() {

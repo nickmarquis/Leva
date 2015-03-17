@@ -1,6 +1,7 @@
 package com.leva.nick.leva;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -17,7 +18,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 
@@ -71,6 +74,14 @@ public class GoogleMapF extends Fragment implements LocationListener {
         map.getUiSettings().setMyLocationButtonEnabled(true);
         map.setMyLocationEnabled(true);
 
+        map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                Intent intent = new Intent(getActivity(), SpotsA.class);
+                startActivity(intent);
+            }
+        });
+
 
         if (MapsInitializer.initialize(this.getActivity()) != ConnectionResult.SUCCESS)
             Toast.makeText(getActivity().getApplicationContext(), "Connection à Google Map impossible", Toast.LENGTH_SHORT).show();
@@ -79,8 +90,10 @@ public class GoogleMapF extends Fragment implements LocationListener {
         centerMapOnMyLocation();
 
         LatLng blaxtonPos = new LatLng(46.80283, -71.22465);
-        //map.addMarker(new MarkerOptions().position(blaxtonPos).icon(BitmapDescriptorFactory.fromResource(R.drawable.yourmarkericon)));
-        map.addMarker(new MarkerOptions().position(blaxtonPos));
+        map.addMarker(new MarkerOptions().position(blaxtonPos).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_house)));
+
+
+
 
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(blaxtonPos, 14);
         map.moveCamera(cameraUpdate);
