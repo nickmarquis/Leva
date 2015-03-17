@@ -20,15 +20,31 @@ import android.view.ViewGroup;
 
 public class TabFrameF extends Fragment {
 
-    private final String[] TITLES = {"Profil", "Carte", "Amis"};
+    private final String[] TITLES = {"Caméra", "Carte", "Amis"};
 
 
     private SlidingTabLayout mSlidingTabLayout;
     private ViewPager mViewPager;
+    Fragment mMapFragment;
+    Fragment mCamFragment;
+    Fragment mFriendFragment;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mCamFragment = CameraF.newInstance(TITLES[0]);
+        mMapFragment = GoogleMapF.newInstance(TITLES[1]);
+        mFriendFragment = GoogleMapF.newInstance(TITLES[2]); //temp
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+
+
         return inflater.inflate(R.layout.fragment_tab_layout, container, false);
     }
 
@@ -97,20 +113,16 @@ public class TabFrameF extends Fragment {
             Fragment fragment;
             switch (position) {
                 case 0:
-                    //fragment = MapF.newInstance(TITLES[position], Color.BLUE, Color.GRAY);
-                    fragment = GoogleMapF.newInstance(TITLES[position]);
+                    fragment = mCamFragment;
                     break;
                 case 1:
-                    //fragment = MapF.newInstance(TITLES[position], Color.BLUE, Color.GRAY);
-                    fragment = GoogleMapF.newInstance(TITLES[position]);
+                    fragment = mMapFragment;
                     break;
                 case 2:
-                    //fragment = MapF.newInstance(TITLES[position], Color.BLUE, Color.GRAY);
-                    fragment = GoogleMapF.newInstance(TITLES[position]);
+                    fragment = mFriendFragment;
                     break;
                 default:
-                    //fragment = MapF.newInstance(TITLES[position], Color.BLUE, Color.GRAY);
-                    fragment = GoogleMapF.newInstance(TITLES[position]);
+                    fragment = mMapFragment;
                     break;
             }
             return fragment;

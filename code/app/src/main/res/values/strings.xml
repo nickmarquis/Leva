@@ -11,5 +11,16 @@
     <string name="googlemapkey">AIzaSyAw_D-Um7eZNQJ3fG6dgmp3s3EfyJvZiSw</string>
     <string name="facebookkey">AIzaSyAw_D-</string>
 
+    <string name="picture">Picture</string>
+    <string name="description_info">Info</string>
+    <string name="intro_message">
+        <![CDATA[
+
+
+            Hello Nick
+
+
+        ]]>
+    </string>
 
 </resources>
