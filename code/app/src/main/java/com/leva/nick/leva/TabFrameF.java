@@ -18,74 +18,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TabFrameF extends Fragment {
 
-    static class PagerItem {
-        private final CharSequence mTitle;
-        private final int mIndicatorColor;
-        private final int mDividerColor;
-
-        PagerItem(CharSequence title, int indicatorColor, int dividerColor) {
-            mTitle = title;
-            mIndicatorColor = indicatorColor;
-            mDividerColor = dividerColor;
-        }
-
-        Fragment createFragment() {
-            return MapF.newInstance(mTitle, mIndicatorColor, mDividerColor);
-        }
-
-        CharSequence getTitle() {
-            return mTitle;
-        }
-
-        int getIndicatorColor() {
-            return mIndicatorColor;
-        }
-
-        int getDividerColor() {
-            return mDividerColor;
-        }
-    }
-
-    static final String LOG_TAG = "TabFrame";
+    private final String[] TITLES = {"Profil", "Carte", "Amis"};
 
 
     private SlidingTabLayout mSlidingTabLayout;
     private ViewPager mViewPager;
 
-    private List<PagerItem> mTabs = new ArrayList<PagerItem>();
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        mTabs.add(new PagerItem(
-                getString(R.string.profil), // Title
-                Color.BLUE, // Indicator color
-                Color.GRAY // Divider color
-        ));
-
-        mTabs.add(new PagerItem(
-                getString(R.string.carte), // Title
-                Color.RED, // Indicator color
-                Color.GRAY // Divider color
-        ));
-
-        mTabs.add(new PagerItem(
-                getString(R.string.amis), // Title
-                Color.YELLOW, // Indicator color
-                Color.GRAY // Divider color
-        ));
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_map, container, false);
+        return inflater.inflate(R.layout.fragment_tab_layout, container, false);
     }
 
     @Override
@@ -101,14 +45,44 @@ public class TabFrameF extends Fragment {
 
             @Override
             public int getIndicatorColor(int position) {
-                return mTabs.get(position).getIndicatorColor();
+                int col;
+                switch (position) {
+                    case 0:
+                        col =  Color.CYAN;
+                        break;
+                    case 1:
+                        col = Color.BLUE;
+                        break;
+                    case 2:
+                        col = Color.CYAN;
+                        break;
+                    default:
+                        col = Color.BLUE;
+                        break;
+                }
+                return col;
             }
 
             @Override
             public int getDividerColor(int position) {
-                return mTabs.get(position).getDividerColor();
-            }
+                int col;
+                switch (position) {
+                    case 0:
+                        col =  Color.GRAY;
+                        break;
+                    case 1:
+                        col = Color.GRAY;
+                        break;
+                    case 2:
+                        col = Color.GRAY;
+                        break;
+                    default:
+                        col = Color.GRAY;
+                        break;
 
+                }
+                return col;
+            }
         });
     }
 
@@ -119,20 +93,36 @@ public class TabFrameF extends Fragment {
         }
 
         @Override
-        public Fragment getItem(int i) {
-            return mTabs.get(i).createFragment();
+        public Fragment getItem(int position) {
+            Fragment fragment;
+            switch (position) {
+                case 0:
+                    //fragment = MapF.newInstance(TITLES[position], Color.BLUE, Color.GRAY);
+                    fragment = GoogleMapF.newInstance(TITLES[position]);
+                    break;
+                case 1:
+                    //fragment = MapF.newInstance(TITLES[position], Color.BLUE, Color.GRAY);
+                    fragment = GoogleMapF.newInstance(TITLES[position]);
+                    break;
+                case 2:
+                    //fragment = MapF.newInstance(TITLES[position], Color.BLUE, Color.GRAY);
+                    fragment = GoogleMapF.newInstance(TITLES[position]);
+                    break;
+                default:
+                    //fragment = MapF.newInstance(TITLES[position], Color.BLUE, Color.GRAY);
+                    fragment = GoogleMapF.newInstance(TITLES[position]);
+                    break;
+            }
+            return fragment;
         }
 
         @Override
         public int getCount() {
-            return mTabs.size();
+            return TITLES.length;
         }
 
         @Override
-        public CharSequence getPageTitle(int position) {
-            return mTabs.get(position).getTitle();
-        }
-
+        public CharSequence getPageTitle(int position) { return TITLES[position];  }
     }
 
 }
