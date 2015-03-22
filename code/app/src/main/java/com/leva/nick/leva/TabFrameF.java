@@ -17,6 +17,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+
 public class TabFrameF extends Fragment {
 
     private final String[] TITLES = {"Caméra", "Carte", "Amis"};
@@ -28,13 +30,26 @@ public class TabFrameF extends Fragment {
     Fragment mCamFragment;
     Fragment mFriendFragment;
 
+    public static TabFrameF newInstance(ArrayList<SpotsMarker> markersArray) {
+
+        TabFrameF fragment = new TabFrameF();
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("myMarker", markersArray);
+        fragment.setArguments(bundle);
+
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        ArrayList<SpotsMarker> markersArray = getArguments().getParcelableArrayList("myMarker");
+
         mCamFragment = CameraF.newInstance(TITLES[0]);
-        mMapFragment = GoogleMapF.newInstance(TITLES[1]);
-        mFriendFragment = GoogleMapF.newInstance(TITLES[2]); //temp
+        mMapFragment = GoogleMapF.newInstance(TITLES[1], markersArray);
+        mFriendFragment = GoogleMapF.newInstance(TITLES[2], markersArray); //temp
 
     }
 
@@ -100,6 +115,7 @@ public class TabFrameF extends Fragment {
                 return col;
             }
         });
+        mViewPager.setCurrentItem(1);
     }
 
     class FragmentPagerAdapter extends android.support.v4.app.FragmentPagerAdapter {

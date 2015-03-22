@@ -10,6 +10,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -23,6 +25,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 
 public class GoogleMapF extends Fragment implements LocationListener {
 
@@ -35,12 +40,17 @@ public class GoogleMapF extends Fragment implements LocationListener {
     private LocationManager mLocationManager;
     private Location mLocation;
 
-    public static GoogleMapF newInstance(CharSequence title) {
+    private HashMap<Marker, SpotsMarker> mMarkersHashMap;
+    private ArrayList<SpotsMarker> mMyMarkersArray;
+
+    public static GoogleMapF newInstance(CharSequence title, ArrayList<SpotsMarker> markersArray) {
 
         Bundle bundle = new Bundle();
         bundle.putCharSequence(KEY_TITLE, title);
+        bundle.putParcelableArrayList("myMarker", markersArray);
 
         GoogleMapF fragment = new GoogleMapF();
+
         fragment.setArguments(bundle);
 
         return fragment;
@@ -52,6 +62,8 @@ public class GoogleMapF extends Fragment implements LocationListener {
 
         mLocationManager = (LocationManager) this.getActivity().getSystemService(Context.LOCATION_SERVICE);
         mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DISTANCE, this);
+
+        mMyMarkersArray = getArguments().getParcelableArrayList("myMarker");
 
     }
 
@@ -71,56 +83,10 @@ public class GoogleMapF extends Fragment implements LocationListener {
         Bundle args = getArguments();
 
         map = mapView.getMap();
-        map.getUiSettings().setMyLocationButtonEnabled(true);
-        map.setMyLocationEnabled(true);
 
-        map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(Marker marker) {
-                Intent intent = new Intent(getActivity(), SpotsA.class);
-                startActivity(intent);
-            }
-        });
+        setUpMap();
+        plotSpotsMarkers(mMyMarkersArray);
 
-
-        if (MapsInitializer.initialize(this.getActivity()) != ConnectionResult.SUCCESS)
-            Toast.makeText(getActivity().getApplicationContext(), "Connection à Google Map impossible", Toast.LENGTH_SHORT).show();
-// break if true
-
-        centerMapOnMyLocation();
-
-        LatLng blaxtonPos = new LatLng(46.80283, -71.22465);
-        map.addMarker(new MarkerOptions().position(blaxtonPos).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_house)));
-
-
-
-
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(blaxtonPos, 14);
-        map.moveCamera(cameraUpdate);
-        map.animateCamera(cameraUpdate);
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10);
-        map.animateCamera(cameraUpdate);
-        mLocationManager.removeUpdates(this);
-    }
-
-    private void centerMapOnMyLocation() {
-
-        map.setMyLocationEnabled(true);
-
-        mLocation = map.getMyLocation();
-        LatLng myLocation = new LatLng(46.80283, -71.22465);
-
-        if (mLocation != null) {
-            myLocation = new LatLng(mLocation.getLatitude(),
-                    mLocation.getLongitude());
-        }
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation,
-                20));
     }
 
     @Override
@@ -161,6 +127,112 @@ public class GoogleMapF extends Fragment implements LocationListener {
 
     @Override
     public void onProviderDisabled(String provider) { }
+
+
+    void setUpMap() {
+
+        map.getUiSettings().setMyLocationButtonEnabled(true);
+        map.setMyLocationEnabled(true);
+
+        if (MapsInitializer.initialize(this.getActivity()) != ConnectionResult.SUCCESS)
+            Toast.makeText(getActivity().getApplicationContext(), "Connection à Google Map impossible", Toast.LENGTH_SHORT).show();
+        // break if true
+
+        centerMapOnMyLocation();
+
+        map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                Intent intent = new Intent(getActivity(), SpotsA.class);
+                startActivity(intent);
+            }
+        });
+
+
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(46.80283, -71.22465), 14);
+        map.moveCamera(cameraUpdate);
+        map.animateCamera(cameraUpdate);
+    }
+
+    private void plotSpotsMarkers(ArrayList<SpotsMarker> markers)
+    {
+
+        mMarkersHashMap = new HashMap<Marker, SpotsMarker>();
+
+        if(markers.size() > 0)
+        {
+            for (SpotsMarker myMarker : markers)
+            {
+
+                // Create user marker with custom icon and other options
+                MarkerOptions markerOption = new MarkerOptions().position(myMarker.getmLatLng());
+
+                int id = getActivity().getResources().getIdentifier(myMarker.getmIcon(), "drawable", getActivity().getPackageName());
+                markerOption.icon(BitmapDescriptorFactory.fromResource(id));
+
+                Marker currentMarker = map.addMarker(markerOption);
+                mMarkersHashMap.put(currentMarker, myMarker);
+
+                map.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
+            }
+        }
+    }
+
+    public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter
+    {
+        public MarkerInfoWindowAdapter()
+        {
+        }
+
+        @Override
+        public View getInfoWindow(Marker marker)
+        {
+            return null;
+        }
+
+        @Override
+        public View getInfoContents(Marker marker)
+        {
+            View v  = getActivity().getLayoutInflater().inflate(R.layout.spots_infos, null);
+
+            SpotsMarker myMarker = mMarkersHashMap.get(marker);
+
+            ImageView markerIcon = (ImageView) v.findViewById(R.id.info_picture);
+
+            TextView markerLabel = (TextView)v.findViewById(R.id.info_name);
+
+            int id = getActivity().getResources().getIdentifier(myMarker.getmPicture(), "drawable", getActivity().getPackageName());
+
+            markerIcon.setImageResource(id);
+
+            markerLabel.setText(myMarker.getmLabel());
+
+            return v;
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10);
+        map.animateCamera(cameraUpdate);
+        mLocationManager.removeUpdates(this);
+    }
+
+    private void centerMapOnMyLocation() {
+
+        map.setMyLocationEnabled(true);
+
+        mLocation = map.getMyLocation();
+        LatLng myLocation = new LatLng(46.80283, -71.22465);
+
+        if (mLocation != null) {
+            myLocation = new LatLng(mLocation.getLatitude(),
+                    mLocation.getLongitude());
+        }
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation,
+                20));
+    }
 
 }
 
