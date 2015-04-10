@@ -28,6 +28,10 @@
     <android:uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="18" />
+    <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
 
     <application
         android:allowBackup="true"
@@ -54,6 +58,15 @@
         <activity
             android:name=".SpotsA"
             android:label="@string/title_activity_spots" >
+        </activity>
+
+        <activity
+            android:name=".promotions.PromotionEditList"
+            android:label="@string/title_activity_promotion_edit_list" >
+        </activity>
+        <activity
+            android:name=".openingHours.OpeningHours"
+            android:label="@string/title_activity_opening_hours" >
         </activity>
     </application>
 

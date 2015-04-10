@@ -31,4 +31,9 @@
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <string name="title_activity_picture_picker">PicturePicker</string>
+    <string name="title_activity_promotion_edit_list">PromotionEditList</string>
+    <string name="title_activity_promo_edit">PromoEdit</string>
+    <string name="title_activity_opening_hours">OpeningHours</string>
+
 </resources>
