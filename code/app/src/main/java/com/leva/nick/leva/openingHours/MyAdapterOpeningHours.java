@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import ca.ulaval.ima.miniproject.R;
+import com.leva.nick.leva.R;
 
 /**
  * Created by davstpierre on 15-04-06.

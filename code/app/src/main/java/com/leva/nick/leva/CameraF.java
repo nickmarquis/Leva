@@ -4,6 +4,7 @@ package com.leva.nick.leva;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.TabActivity;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.content.Context;
@@ -29,6 +30,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
+import android.text.format.Time;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
@@ -44,10 +46,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -210,6 +214,7 @@ public class CameraF extends Fragment implements View.OnClickListener {
 
         @Override
         public void onImageAvailable(ImageReader reader) {
+
             mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), mFile));
         }
 
@@ -389,7 +394,7 @@ public class CameraF extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mFile = new File(getActivity().getExternalFilesDir(null), "pic.jpg");
+        //mFile = new File(getActivity().getExternalFilesDir(null), "pic.jpg");
     }
 
     @Override
@@ -707,8 +712,20 @@ public class CameraF extends Fragment implements View.OnClickListener {
                 @Override
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request,
                                                TotalCaptureResult result) {
-                    showToast("Saved: " + mFile);
                     unlockFocus();
+
+                    TabFrameF tabHost = (TabFrameF) getParentFragment();
+
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+                    String currentDateandTime = sdf.format(new Date()) + ".jpg";
+                    mFile = new File(getActivity().getExternalFilesDir(null), currentDateandTime);
+
+                    tabHost.setNewImageToAdd(mFile.getPath());
+
+                    tabHost.setCurrentTab(1);
+
+                    showToast("Saved: " + mFile);
+
                 }
             };
 
@@ -779,6 +796,8 @@ public class CameraF extends Fragment implements View.OnClickListener {
             mFile = file;
         }
 
+
+
         @Override
         public void run() {
             ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
@@ -820,7 +839,7 @@ public class CameraF extends Fragment implements View.OnClickListener {
 
     }
 
-    public static class ErrorDialog extends DialogFragment {
+    static public class ErrorDialog extends DialogFragment {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {

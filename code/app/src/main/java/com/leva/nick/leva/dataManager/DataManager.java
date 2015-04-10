@@ -13,8 +13,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 
-import ca.ulaval.ima.miniproject.openingHours.ItemOpeningHours;
-import ca.ulaval.ima.miniproject.promotions.ItemPromotion;
+import com.leva.nick.leva.openingHours.ItemOpeningHours;
+import com.leva.nick.leva.promotions.ItemPromotion;
 
 /**
  * Created by davstpierre on 15-04-06.

@@ -1,5 +1,6 @@
 package com.leva.nick.leva;
 
+import android.media.Image;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -16,6 +17,7 @@ public class SpotsMarker implements Parcelable {
     private LatLng mLatLng;
     private String mPicture;
     private String mDescription;
+    private String mImage;
 
     public SpotsMarker(String label, String icon, LatLng latiLong, String picture, String description)
     {
@@ -76,12 +78,20 @@ public class SpotsMarker implements Parcelable {
         this.mDescription = description;
     }
 
+    public String getmImage() {
+        return mImage;
+    }
+
+    public void setmImage(String mImage) {
+        this.mImage = mImage;
+    }
     protected SpotsMarker(Parcel in) {
         mLabel = in.readString();
         mIcon = in.readString();
         mLatLng = (LatLng) in.readValue(LatLng.class.getClassLoader());
         mPicture = in.readString();
         mDescription = in.readString();
+        mImage = in.readString();
     }
 
     @Override
@@ -96,6 +106,7 @@ public class SpotsMarker implements Parcelable {
         dest.writeValue(mLatLng);
         dest.writeString(mPicture);
         dest.writeString(mDescription);
+        dest.writeString(mImage);
     }
 
     @SuppressWarnings("unused")

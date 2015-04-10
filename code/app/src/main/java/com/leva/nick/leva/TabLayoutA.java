@@ -39,7 +39,7 @@ public class TabLayoutA extends SampleActivityBase {
         if (savedInstanceState == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             TabFrameF fragment = TabFrameF.newInstance(mMyMarkersArray);
-            transaction.replace(R.id.content_fragment, fragment);
+            transaction.replace(R.id.content_fragment, fragment, TAG);
             transaction.commit();
         }
     }

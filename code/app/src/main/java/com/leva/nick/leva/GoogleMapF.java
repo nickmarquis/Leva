@@ -1,17 +1,23 @@
 package com.leva.nick.leva;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -25,6 +31,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -43,6 +52,13 @@ public class GoogleMapF extends Fragment implements LocationListener {
     private HashMap<Marker, SpotsMarker> mMarkersHashMap;
     private ArrayList<SpotsMarker> mMyMarkersArray;
 
+    private MapView mMapView;
+    private ImageView mImageView;
+    private Image image;
+
+    private boolean mediaIsOn;
+    private  String selectedSpotName;
+
     public static GoogleMapF newInstance(CharSequence title, ArrayList<SpotsMarker> markersArray) {
 
         Bundle bundle = new Bundle();
@@ -50,8 +66,8 @@ public class GoogleMapF extends Fragment implements LocationListener {
         bundle.putParcelableArrayList("myMarker", markersArray);
 
         GoogleMapF fragment = new GoogleMapF();
-
         fragment.setArguments(bundle);
+        fragment.setRetainInstance(true);
 
         return fragment;
     }
@@ -64,7 +80,8 @@ public class GoogleMapF extends Fragment implements LocationListener {
         mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DISTANCE, this);
 
         mMyMarkersArray = getArguments().getParcelableArrayList("myMarker");
-
+        mediaIsOn = false;
+        selectedSpotName = "";
     }
 
     @Override
@@ -129,7 +146,7 @@ public class GoogleMapF extends Fragment implements LocationListener {
     public void onProviderDisabled(String provider) { }
 
 
-    void setUpMap() {
+    private void setUpMap() {
 
         map.getUiSettings().setMyLocationButtonEnabled(true);
         map.setMyLocationEnabled(true);
@@ -138,21 +155,100 @@ public class GoogleMapF extends Fragment implements LocationListener {
             Toast.makeText(getActivity().getApplicationContext(), "Connection à Google Map impossible", Toast.LENGTH_SHORT).show();
         // break if true
 
-        centerMapOnMyLocation();
 
-        map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+        mImageView = (ImageView) getView().findViewById(R.id.imageView);
+        mMapView = (MapView) getView().findViewById(R.id.map);
+
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
-            public void onInfoWindowClick(Marker marker) {
-                Intent intent = new Intent(getActivity(), SpotsA.class);
-                startActivity(intent);
+            public boolean onMarkerClick(Marker marker) {
+
+
+
+                if (mediaIsOn && marker.getTitle().compareTo(selectedSpotName) == 0) {
+
+                    map.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+
+                    ImageView imageView = (ImageView) getView().findViewById(R.id.imageView);
+
+                    LinearLayout.LayoutParams paramView = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.MATCH_PARENT, 1f);
+
+                    LinearLayout.LayoutParams paramMap = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.MATCH_PARENT, 0f);
+
+                    mapView.setLayoutParams(paramMap);
+                    imageView.setLayoutParams(paramView);
+
+                    mediaIsOn = false;
+                    selectedSpotName = "";
+
+                } else {
+
+                    map.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+
+                    ImageView imageView = (ImageView) getView().findViewById(R.id.imageView);
+
+                    LinearLayout.LayoutParams paramView = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.MATCH_PARENT, 0.2f);
+
+  /*              ValueAnimator animMap = ValueAnimator.ofFloat(1f, 0.2f);
+                ValueAnimator animImage = ValueAnimator.ofFloat(0f, 0.8f);
+                AnimatorSet set = new AnimatorSet();
+
+                animMap.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        float val = (float) animation.getAnimatedValue();
+                        mMapView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, val));
+
+                        mMapView.requestLayout();
+                    }
+                });
+
+                animImage.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    public void onAnimationUpdate(ValueAnimator animation) {
+
+                        float val = (float) animation.getAnimatedValue();
+                        mImageView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, val));
+
+                        mImageView.requestLayout();
+                    }
+                });
+
+                set.setDuration(500);
+                set.playTogether(animMap, animImage);
+                set.start();*/
+
+                    LinearLayout.LayoutParams paramMap = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.MATCH_PARENT, 0.8f);
+
+                    mapView.setLayoutParams(paramMap);
+                    imageView.setLayoutParams(paramView);
+
+                    SpotsMarker spotTemp = mMarkersHashMap.get(marker);
+                    if (spotTemp.getmImage() == null) {
+                        Drawable resImg = getResources().getDrawable(R.drawable.quebec);
+                        imageView.setImageDrawable(resImg);
+                    }
+                    else {
+                        Bitmap image = loadImageFromStorage(spotTemp.getmImage());
+                        imageView.setImageBitmap(image);
+                    }
+                    selectedSpotName = marker.getTitle();
+                    mediaIsOn = true;
+                }
+
+                return true;
             }
+
+
         });
-
-
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(46.80283, -71.22465), 14);
-        map.moveCamera(cameraUpdate);
-        map.animateCamera(cameraUpdate);
     }
+
 
     private void plotSpotsMarkers(ArrayList<SpotsMarker> markers)
     {
@@ -163,9 +259,9 @@ public class GoogleMapF extends Fragment implements LocationListener {
         {
             for (SpotsMarker myMarker : markers)
             {
-
                 // Create user marker with custom icon and other options
                 MarkerOptions markerOption = new MarkerOptions().position(myMarker.getmLatLng());
+                markerOption.title(myMarker.getmLabel());
 
                 int id = getActivity().getResources().getIdentifier(myMarker.getmIcon(), "drawable", getActivity().getPackageName());
                 markerOption.icon(BitmapDescriptorFactory.fromResource(id));
@@ -178,6 +274,33 @@ public class GoogleMapF extends Fragment implements LocationListener {
         }
     }
 
+    public void addImageToSpots(String image) {
+
+        Location locationA = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (locationA == null)
+            locationA = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        Location locationB = new Location("point B");
+
+        float minDistance = 999999999;
+        int markerIndex = -1;
+
+        for (int counter = 0; counter < mMyMarkersArray.size(); counter++)
+        {
+            SpotsMarker myMarker = mMyMarkersArray.get(counter);
+            LatLng b = myMarker.getmLatLng();
+            locationB.setLongitude(b.longitude);
+            locationB.setLatitude(b.latitude);
+
+            float distanceTemp = locationA.distanceTo(locationB);
+            if (distanceTemp < minDistance && distanceTemp < 1000) { // 1 km pour tester
+                minDistance = distanceTemp;
+                markerIndex = counter;
+            }
+        }
+        mMyMarkersArray.get(markerIndex).setmImage(image);
+}
+
+
     public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter
     {
         public MarkerInfoWindowAdapter()
@@ -187,27 +310,30 @@ public class GoogleMapF extends Fragment implements LocationListener {
         @Override
         public View getInfoWindow(Marker marker)
         {
+            marker.hideInfoWindow();
             return null;
         }
 
         @Override
         public View getInfoContents(Marker marker)
         {
-            View v  = getActivity().getLayoutInflater().inflate(R.layout.spots_infos, null);
 
-            SpotsMarker myMarker = mMarkersHashMap.get(marker);
+          View v  = getActivity().getLayoutInflater().inflate(R.layout.spots_infos, null);
+
+/*            SpotsMarker myMarker = mMarkersHashMap.get(marker);
 
             ImageView markerIcon = (ImageView) v.findViewById(R.id.info_picture);
-
-            TextView markerLabel = (TextView)v.findViewById(R.id.info_name);
-
             int id = getActivity().getResources().getIdentifier(myMarker.getmPicture(), "drawable", getActivity().getPackageName());
 
             markerIcon.setImageResource(id);
 
-            markerLabel.setText(myMarker.getmLabel());
+            LatLng temp = map.getProjection().getVisibleRegion().nearLeft;
 
-            return v;
+            CameraUpdate  cameraUpdate = CameraUpdateFactory.newLatLng(temp);;
+            map.moveCamera(cameraUpdate);
+            map.animateCamera(cameraUpdate);*/
+
+           return v;
         }
     }
 
@@ -221,17 +347,25 @@ public class GoogleMapF extends Fragment implements LocationListener {
 
     private void centerMapOnMyLocation() {
 
-        map.setMyLocationEnabled(true);
-
-        mLocation = map.getMyLocation();
-        LatLng myLocation = new LatLng(46.80283, -71.22465);
-
-        if (mLocation != null) {
-            myLocation = new LatLng(mLocation.getLatitude(),
-                    mLocation.getLongitude());
+        Location locationA = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (locationA == null) {
+            locationA = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            if (locationA == null) {
+                LatLng myLocation = new LatLng(46.80283, -71.22465);
+                locationA.setLatitude(myLocation.latitude);
+                locationA.setLongitude(myLocation.longitude);
+            }
         }
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation,
-                20));
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(locationA.getLatitude(), locationA.getLongitude()), 20));
+    }
+
+    private Bitmap loadImageFromStorage(String path)
+    {
+        File imgFile = new File(path);
+        if (imgFile.exists())
+            return BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+        else
+            return null;
     }
 
 }

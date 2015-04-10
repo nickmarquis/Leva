@@ -9,6 +9,7 @@ package com.leva.nick.leva;
 import com.leva.nick.leva.common.view.SlidingTabLayout;
 
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -26,9 +27,11 @@ public class TabFrameF extends Fragment {
 
     private SlidingTabLayout mSlidingTabLayout;
     private ViewPager mViewPager;
-    Fragment mMapFragment;
-    Fragment mCamFragment;
-    Fragment mFriendFragment;
+    private Fragment mMapFragment;
+    private Fragment mCamFragment;
+    private Fragment mFriendFragment;
+
+    private String mNewImageToAdd;
 
     public static TabFrameF newInstance(ArrayList<SpotsMarker> markersArray) {
 
@@ -38,6 +41,7 @@ public class TabFrameF extends Fragment {
         bundle.putParcelableArrayList("myMarker", markersArray);
         fragment.setArguments(bundle);
 
+
         return fragment;
     }
 
@@ -45,20 +49,23 @@ public class TabFrameF extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ArrayList<SpotsMarker> markersArray = getArguments().getParcelableArrayList("myMarker");
+        if (savedInstanceState == null) {
 
-        mCamFragment = CameraF.newInstance(TITLES[0]);
-        mMapFragment = GoogleMapF.newInstance(TITLES[1], markersArray);
-        mFriendFragment = GoogleMapF.newInstance(TITLES[2], markersArray); //temp
+            ArrayList<SpotsMarker> markersArray = getArguments().getParcelableArrayList("myMarker");
+            mCamFragment = CameraF.newInstance(TITLES[0]);
+            mMapFragment = GoogleMapF.newInstance(TITLES[1], markersArray);
+            mFriendFragment = GoogleMapF.newInstance(TITLES[2], markersArray); //temp
+
+            mNewImageToAdd = null;
+        }
+
+
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-
-
         return inflater.inflate(R.layout.fragment_tab_layout, container, false);
     }
 
@@ -116,6 +123,20 @@ public class TabFrameF extends Fragment {
             }
         });
         mViewPager.setCurrentItem(1);
+    }
+
+    public void setCurrentTab(int tab_index){
+        mViewPager.setCurrentItem(tab_index);
+    }
+
+    public void setNewImageToAdd(String image){
+        mNewImageToAdd = image;
+        GoogleMapF fragment = (GoogleMapF)mMapFragment;
+        fragment.addImageToSpots(image);
+    }
+
+    public String getNewImageToAdd(){
+        return mNewImageToAdd;
     }
 
     class FragmentPagerAdapter extends android.support.v4.app.FragmentPagerAdapter {

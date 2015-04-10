@@ -12,10 +12,10 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
-import ca.ulaval.ima.miniproject.R;
+import com.leva.nick.leva.R;
 
-import static ca.ulaval.ima.miniproject.dataManager.DataManager.readOpeningHours;
-import static ca.ulaval.ima.miniproject.dataManager.DataManager.writeOpeningHours;
+import static com.leva.nick.leva.dataManager.DataManager.readOpeningHours;
+import static com.leva.nick.leva.dataManager.DataManager.writeOpeningHours;
 
 
 public class OpeningHours extends ActionBarActivity {
