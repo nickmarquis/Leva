@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#00000000"
+    android:padding="8dp"
+    android:id="@+id/relativeLayout">
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editTextPromotion"
+        android:hint="Nom de la promotion"
+        android:textColor="#0198E1"
+        android:textColorHint="#0198E1"
+        android:textStyle="italic"
+        android:layout_below="@+id/textViewDay"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/imageButton"
+        android:layout_toStartOf="@+id/imageButton" />
+
+    <ImageButton
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/imageButton"
+        android:layout_alignTop="@+id/editTextPromotion"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:nestedScrollingEnabled="false"
+        android:onClick="choosePictureFromLibrary" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:id="@+id/editTextPromotionDescription"
+        android:maxLines="1"
+        android:hint="Description de la promotion"
+        android:layout_below="@+id/editTextPromotion"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/imageButton"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Day"
+        android:id="@+id/textViewDay"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:textStyle="bold" />
+
+    <EditText
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:id="@+id/editTextOpen"
+        android:layout_below="@+id/editTextPromotionDescription"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:hint="de" />
+
+    <EditText
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:id="@+id/editTextEnd"
+        android:layout_below="@+id/editTextPromotionDescription"
+        android:layout_toRightOf="@+id/editTextOpen"
+        android:layout_toEndOf="@+id/editTextOpen"
+        android:hint="à" />
+
+</RelativeLayout >
