@@ -73,8 +73,8 @@ public class TabLayoutA extends SampleActivityBase {
 //        FileOutputStream fout = new FileOutputStream(fileName);
 //        ObjectOutputStream out = new ObjectOutputStream(fout);
 
-        mMyMarkersArray.add(new SpotsMarker("Blaxton", "ic_house", new LatLng(46.80283, -71.22465), "ic_blaxton", "Ceci est un resto/bar" ));
-        mMyMarkersArray.add(new SpotsMarker("4 foyers", "ic_house", new LatLng(47.027088, -71.383312), "ic_4foyers", "Ceci est un resto/bar de ski" ));
+        mMyMarkersArray.add(new SpotsMarker("Blaxton", "ic_house", new LatLng(46.80283, -71.22465), "ic_blaxton", "Ceci est un resto/bar. Le Blaxon marche très bien le vendredi soir. Il y a deux étages et servent du popcorn ...................................................................................................................." ));
+        mMyMarkersArray.add(new SpotsMarker("4 foyers", "ic_house", new LatLng(47.027088, -71.383312), "ic_4foyers", "Ceci est un resto/bar de ski. Le monde vont dans cette établissement le après un journée de ski ou simplement pour diner. Le vendredi soir le bar est plein et il ya a un band différent ....................................." ));
         mMyMarkersArray.add(new SpotsMarker("Maurice", "ic_house", new LatLng(46.805820, -71.216991), "ic_maurice", "Ceci est un club" ));
         mMyMarkersArray.add(new SpotsMarker("Archibald", "ic_house", new LatLng(46.943319, -71.292171), "ic_archibald", "Ceci est un resto/bar" ));
         mMyMarkersArray.add(new SpotsMarker("Valcartier", "ic_house", new LatLng(47.018067, -71.473618), "ic_valcartier", "Ceci est un parc d'amusement" ));

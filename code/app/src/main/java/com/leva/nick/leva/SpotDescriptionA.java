@@ -1,17 +1,34 @@
 package com.leva.nick.leva;
 
-import android.support.v7.app.ActionBarActivity;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 
-public class SpotDescriptionA extends ActionBarActivity {
+public class SpotDescriptionA extends Activity {
+
+    SpotsMarker mSpot;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spot_description);
+
+        Intent intent = getIntent();
+        mSpot = intent.getParcelableExtra("myMarker");
+
+        ImageView image = (ImageView)findViewById(R.id.imgD);
+        TextView tilte = (TextView)findViewById(R.id.tilteD);
+        ExpandableTextView desc = (ExpandableTextView)findViewById(R.id.descD);
+
+        int drawableResourceId = this.getResources().getIdentifier(mSpot.getmPicture(), "drawable", this.getPackageName());
+        image.setImageResource(drawableResourceId);
+        tilte.setText(mSpot.getmLabel());
+        desc.setText(mSpot.getmDescription());
     }
 
 

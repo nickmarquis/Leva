@@ -4,21 +4,34 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:id="@+id/mapLayout">
+    android:id="@+id/googleLayout">
 
-    <ImageView
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:id="@+id/imageView"
         android:layout_weight="0"
-        android:contentDescription="@string/imageSnap" />
+        android:id="@+id/imaLayout">
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/map"
-        android:layout_width="match_parent"
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/imageView" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" >
+        android:layout_weight="1"
+        android:id="@+id/mapLayout">
 
-    </com.google.android.gms.maps.MapView>
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/map"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+        </com.google.android.gms.maps.MapView>
+    </LinearLayout>
 
 </LinearLayout>

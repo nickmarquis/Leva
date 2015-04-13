@@ -23,7 +23,7 @@
         ]]>
     </string>
     <string name="TakePicture">TakePicture</string>
-    <string name="title_activity_spots">SpotsA</string>
+    <string name="title_activity_spots">SpotDescriptionA</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="imageSnap">image snap</string>

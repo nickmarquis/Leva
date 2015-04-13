@@ -17,10 +17,10 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
-import ca.ulaval.ima.miniproject.R;
+import com.leva.nick.leva.R;
 
-import static ca.ulaval.ima.miniproject.dataManager.DataManager.readPromotions;
-import static ca.ulaval.ima.miniproject.dataManager.DataManager.writePromotions;
+import static com.leva.nick.leva.dataManager.DataManager.readPromotions;
+import static com.leva.nick.leva.dataManager.DataManager.writePromotions;
 
 
 public class PromotionEditList extends ActionBarActivity {

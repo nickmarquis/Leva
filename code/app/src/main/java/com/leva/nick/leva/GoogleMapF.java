@@ -1,21 +1,21 @@
 package com.leva.nick.leva;
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -32,8 +32,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -54,10 +52,13 @@ public class GoogleMapF extends Fragment implements LocationListener {
 
     private MapView mMapView;
     private ImageView mImageView;
-    private Image image;
 
-    private boolean mediaIsOn;
-    private  String selectedSpotName;
+    private float mY1, mY2;
+    static final int MIN_DISTANCE_SWIPE = 300;
+
+    private boolean mMediaIsOn;
+    private  String mSelectedSpotName;
+    private LinearLayout mImageLayout;
 
     public static GoogleMapF newInstance(CharSequence title, ArrayList<SpotsMarker> markersArray) {
 
@@ -80,8 +81,9 @@ public class GoogleMapF extends Fragment implements LocationListener {
         mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DISTANCE, this);
 
         mMyMarkersArray = getArguments().getParcelableArrayList("myMarker");
-        mediaIsOn = false;
-        selectedSpotName = "";
+        mMediaIsOn = false;
+        mSelectedSpotName = "";
+
     }
 
     @Override
@@ -103,6 +105,29 @@ public class GoogleMapF extends Fragment implements LocationListener {
 
         setUpMap();
         plotSpotsMarkers(mMyMarkersArray);
+
+        mImageView.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (v == getView().findViewById(R.id.imageView)) {
+                    int action = event.getAction();
+                    switch(action){
+                        case MotionEvent.ACTION_DOWN:
+                            mY1 = event.getY();
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            mY2 = event.getY();
+                            if (mY2 - mY1 > MIN_DISTANCE_SWIPE)
+                                openSpotDescription();
+                            else if (mY1 - mY2 > MIN_DISTANCE_SWIPE)
+                                closeImageView();
+                            break;
+                    }
+                }
+                return true;
+            }
+        });
 
     }
 
@@ -159,87 +184,39 @@ public class GoogleMapF extends Fragment implements LocationListener {
         mImageView = (ImageView) getView().findViewById(R.id.imageView);
         mMapView = (MapView) getView().findViewById(R.id.map);
 
+        mImageLayout = (LinearLayout) getView().findViewById(R.id.imaLayout);
+
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
 
 
 
-                if (mediaIsOn && marker.getTitle().compareTo(selectedSpotName) == 0) {
+                if (mMediaIsOn && marker.getTitle().compareTo(mSelectedSpotName) == 0) {
 
                     map.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
 
-                    ImageView imageView = (ImageView) getView().findViewById(R.id.imageView);
+                    toggle();
 
-                    LinearLayout.LayoutParams paramView = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.MATCH_PARENT, 1f);
-
-                    LinearLayout.LayoutParams paramMap = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.MATCH_PARENT, 0f);
-
-                    mapView.setLayoutParams(paramMap);
-                    imageView.setLayoutParams(paramView);
-
-                    mediaIsOn = false;
-                    selectedSpotName = "";
+                    mSelectedSpotName = "";
 
                 } else {
 
                     map.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
 
-                    ImageView imageView = (ImageView) getView().findViewById(R.id.imageView);
-
-                    LinearLayout.LayoutParams paramView = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.MATCH_PARENT, 0.2f);
-
-  /*              ValueAnimator animMap = ValueAnimator.ofFloat(1f, 0.2f);
-                ValueAnimator animImage = ValueAnimator.ofFloat(0f, 0.8f);
-                AnimatorSet set = new AnimatorSet();
-
-                animMap.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        float val = (float) animation.getAnimatedValue();
-                        mMapView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, val));
-
-                        mMapView.requestLayout();
-                    }
-                });
-
-                animImage.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    public void onAnimationUpdate(ValueAnimator animation) {
-
-                        float val = (float) animation.getAnimatedValue();
-                        mImageView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, val));
-
-                        mImageView.requestLayout();
-                    }
-                });
-
-                set.setDuration(500);
-                set.playTogether(animMap, animImage);
-                set.start();*/
-
-                    LinearLayout.LayoutParams paramMap = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.MATCH_PARENT, 0.8f);
-
-                    mapView.setLayoutParams(paramMap);
-                    imageView.setLayoutParams(paramView);
+                    if (mSelectedSpotName.compareTo("") == 0)
+                        toggle();
 
                     SpotsMarker spotTemp = mMarkersHashMap.get(marker);
                     if (spotTemp.getmImage() == null) {
                         Drawable resImg = getResources().getDrawable(R.drawable.quebec);
-                        imageView.setImageDrawable(resImg);
+                        mImageView.setImageDrawable(resImg);
                     }
                     else {
                         Bitmap image = loadImageFromStorage(spotTemp.getmImage());
-                        imageView.setImageBitmap(image);
+                        mImageView.setImageBitmap(image);
                     }
-                    selectedSpotName = marker.getTitle();
-                    mediaIsOn = true;
+                    mSelectedSpotName = marker.getTitle();
                 }
 
                 return true;
@@ -366,6 +343,66 @@ public class GoogleMapF extends Fragment implements LocationListener {
             return BitmapFactory.decodeFile(imgFile.getAbsolutePath());
         else
             return null;
+    }
+
+    private void closeImageView() {
+
+        toggle();
+
+        mSelectedSpotName = "";
+    }
+
+    private void openSpotDescription() {
+
+        Intent myIntent = new Intent(getActivity(), SpotDescriptionA.class);
+
+        SpotsMarker spot = null;
+        for (SpotsMarker myMarker : mMyMarkersArray) {
+            if (myMarker.getmLabel().compareTo(mSelectedSpotName) == 0)
+                spot = myMarker;
+        }
+        if (null != spot) {
+            myIntent.putExtra("myMarker", spot);
+            startActivity(myIntent);
+        }
+    }
+
+    public void toggle() {
+        Animation a;
+        float expandedWeight = 3;
+        float collapsedWeight = 0;
+        if (mMediaIsOn) {
+            a = new ExpandAnimation(expandedWeight, collapsedWeight);
+        } else {
+            a = new ExpandAnimation(collapsedWeight, expandedWeight);
+        }
+
+        a.setDuration(400);
+        mImageLayout.startAnimation(a);
+        mMediaIsOn = !mMediaIsOn;
+    }
+
+    private class ExpandAnimation extends Animation {
+
+        private final float mStartWeight;
+        private final float mDeltaWeight;
+
+        public ExpandAnimation(float startWeight, float endWeight) {
+            mStartWeight = startWeight;
+            mDeltaWeight = endWeight - startWeight;
+        }
+
+        @Override
+        protected void applyTransformation(float interpolatedTime, Transformation t) {
+            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) mImageLayout.getLayoutParams();
+            lp.weight = (mStartWeight + (mDeltaWeight * interpolatedTime));
+            mImageLayout.setLayoutParams(lp);
+        }
+
+        @Override
+        public boolean willChangeBounds() {
+            return true;
+        }
     }
 
 }
