@@ -7,6 +7,7 @@
 package com.leva.nick.leva;
 
 import com.leva.nick.leva.common.view.SlidingTabLayout;
+import com.sromku.simple.fb.entities.Profile;
 
 import android.graphics.Color;
 import android.media.Image;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TabFrameF extends Fragment {
 
@@ -29,7 +31,7 @@ public class TabFrameF extends Fragment {
     private ViewPager mViewPager;
     private Fragment mMapFragment;
     private Fragment mCamFragment;
-    private Fragment mFriendFragment;
+    private Fragment mFacebookFragment;
 
     private String mNewImageToAdd;
 
@@ -54,7 +56,7 @@ public class TabFrameF extends Fragment {
             ArrayList<SpotsMarker> markersArray = getArguments().getParcelableArrayList("myMarker");
             mCamFragment = CameraF.newInstance(TITLES[0]);
             mMapFragment = GoogleMapF.newInstance(TITLES[1], markersArray);
-            mFriendFragment = GoogleMapF.newInstance(TITLES[2], markersArray); //temp
+            mFacebookFragment = FacebookF.newInstance(TITLES[2]);
 
             mNewImageToAdd = null;
         }
@@ -106,16 +108,16 @@ public class TabFrameF extends Fragment {
                 int col;
                 switch (position) {
                     case 0:
-                        col =  Color.GRAY;
+                        col =  Color.YELLOW;
                         break;
                     case 1:
-                        col = Color.GRAY;
+                        col = Color.YELLOW;
                         break;
                     case 2:
-                        col = Color.GRAY;
+                        col = Color.YELLOW;
                         break;
                     default:
-                        col = Color.GRAY;
+                        col = Color.YELLOW;
                         break;
 
                 }
@@ -156,7 +158,7 @@ public class TabFrameF extends Fragment {
                     fragment = mMapFragment;
                     break;
                 case 2:
-                    fragment = mFriendFragment;
+                    fragment = mFacebookFragment;
                     break;
                 default:
                     fragment = mMapFragment;

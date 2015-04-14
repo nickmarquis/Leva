@@ -20,7 +20,7 @@
             android:singleLine="true"
             android:layout_gravity="center"
             android:gravity="center_vertical"
-            android:textSize="16sp"
+            android:textSize="16dp"
             android:textColor="@android:color/black"
             android:textColorHint="@color/com_facebook_picker_search_bar_text"
             android:background="@color/com_facebook_picker_search_bar_background"
@@ -28,4 +28,4 @@
             android:drawablePadding="5dp"
             android:imeOptions="actionDone"
             />
-</LinearLayout><!-- From: file:/home/nick/Documents/Leva/code/facebook/res/layout/com_facebook_search_bar_layout.xml --><!-- From: file:/home/nick/Documents/Leva/code/Simple%20Facebook/build/intermediates/exploded-aar/com.facebook.android/facebook/3.23.1/res/layout/com_facebook_search_bar_layout.xml -->
+</LinearLayout><!-- From: file:/home/nick/Documents/Leva/code/facebook/res/layout/com_facebook_search_bar_layout.xml --><!-- From: file:/home/nick/Documents/Leva/code/Simple%20Facebook/build/intermediates/exploded-aar/code/facebook/unspecified/res/layout/com_facebook_search_bar_layout.xml -->

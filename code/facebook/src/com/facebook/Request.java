@@ -40,16 +40,17 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.GZIPOutputStream;
 
 /**
- * A single request to be sent to the Facebook Platform through the <a
- * href="https://developers.facebook.com/docs/reference/api/">Graph API</a>. The Request class provides functionality
+ * A single request to be sent to the Facebook Platform through either the <a
+ * href="https://developers.facebook.com/docs/reference/api/">Graph API</a> or <a
+ * href="https://developers.facebook.com/docs/reference/rest/">REST API</a>. The Request class provides functionality
  * relating to serializing and deserializing requests and responses, making calls in batches (with a single round-trip
  * to the service) and making calls asynchronously.
  *
- * The particular service endpoint that a request targets is determined by a graph path (see the
- * {@link #setGraphPath(String) setGraphPath} method).
+ * The particular service endpoint that a request targets is determined by either a graph path (see the
+ * {@link #setGraphPath(String) setGraphPath} method) or a REST method name (see the {@link #setRestMethod(String)
+ * setRestMethod} method); a single request may not target both.
  *
  * A Request can be executed either anonymously or representing an authenticated user. In the former case, no Session
  * needs to be specified, while in the latter, a Session that is in an opened state must be provided. If requests are
@@ -84,7 +85,6 @@ public class Request {
     private static final String USER_AGENT_HEADER = "User-Agent";
     private static final String CONTENT_TYPE_HEADER = "Content-Type";
     private static final String ACCEPT_LANGUAGE_HEADER = "Accept-Language";
-    private static final String CONTENT_ENCODING_HEADER = "Content-Encoding";
 
     // Parameter names/values
     private static final String PICTURE_PARAM = "picture";
@@ -111,13 +111,13 @@ public class Request {
 
     private static String defaultBatchApplicationId;
 
-    // Group 1 in the pattern is the path without the version info
-    private static Pattern versionPattern = Pattern.compile("^/?v\\d+\\.\\d+/(.*)");
+    private static Pattern versionPattern = Pattern.compile("^v\\d+\\.\\d+/.*");
 
     private Session session;
     private HttpMethod httpMethod;
     private String graphPath;
     private GraphObject graphObject;
+    private String restMethod;
     private String batchEntryName;
     private String batchEntryDependsOn;
     private boolean batchEntryOmitResultOnSuccess = true;
@@ -126,7 +126,6 @@ public class Request {
     private String overriddenURL;
     private Object tag;
     private String version;
-    private boolean skipClientToken = false;
 
     /**
      * Constructs a request without a session, graph path, or any other parameters.
@@ -263,6 +262,26 @@ public class Request {
     public static Request newPostRequest(Session session, String graphPath, GraphObject graphObject, Callback callback) {
         Request request = new Request(session, graphPath, null, HttpMethod.POST , callback);
         request.setGraphObject(graphObject);
+        return request;
+    }
+
+    /**
+     * Creates a new Request configured to make a call to the Facebook REST API.
+     *
+     * @param session
+     *            the Session to use, or null; if non-null, the session must be in an opened state
+     * @param restMethod
+     *            the method in the Facebook REST API to execute
+     * @param parameters
+     *            additional parameters to pass along with the Graph API request; parameters must be Strings, Numbers,
+     *            Bitmaps, Dates, or Byte arrays.
+     * @param httpMethod
+     *            the HTTP method to use for the request; must be one of GET, POST, or DELETE
+     * @return a Request that is ready to execute
+     */
+    public static Request newRestRequest(Session session, String restMethod, Bundle parameters, HttpMethod httpMethod) {
+        Request request = new Request(session, null, parameters, httpMethod);
+        request.setRestMethod(restMethod);
         return request;
     }
 
@@ -523,7 +542,6 @@ public class Request {
      * A `null` ID will be provided into the callback if a) there is no native Facebook app, b) no one is logged into
      * it, or c) the app has previously called
      * {@link Settings#setLimitEventAndDataUsage(android.content.Context, boolean)} with `true` for this user.
-     * <b>You must call this method from a background thread for it to work properly.</b>
      *
      * @param session
      *            the Session to issue the Request on, or null; if non-null, the session must be in an opened state.
@@ -558,7 +576,6 @@ public class Request {
      * A `null` ID will be provided into the callback if a) there is no native Facebook app, b) no one is logged into
      * it, or c) the app has previously called
      * {@link Settings#setLimitEventAndDataUsage(android.content.Context, boolean)} ;} with `true` for this user.
-     * <b>You must call this method from a background thread for it to work properly.</b>
      *
      * @param session
      *            the Session to issue the Request on, or null; if non-null, the session must be in an opened state.
@@ -857,7 +874,7 @@ public class Request {
     }
 
     /**
-     * Sets the graph path of this request.
+     * Sets the graph path of this request. A graph path may not be set if a REST method has been specified.
      *
      * @param graphPath
      *            the graph path for this request
@@ -909,13 +926,6 @@ public class Request {
     }
 
     /**
-     * This is an internal function that is not meant to be used by developers.
-     */
-    public final void setSkipClientToken(boolean skipClientToken) {
-        this.skipClientToken = skipClientToken;
-    }
-
-    /**
      * Returns the parameters for this request.
      *
      * @return the parameters
@@ -932,6 +942,25 @@ public class Request {
      */
     public final void setParameters(Bundle parameters) {
         this.parameters = parameters;
+    }
+
+    /**
+     * Returns the REST method to call for this request.
+     *
+     * @return the REST method
+     */
+    public final String getRestMethod() {
+        return this.restMethod;
+    }
+
+    /**
+     * Sets the REST method to call for this request. A REST method may not be set if a graph path has been specified.
+     *
+     * @param restMethod
+     *            the REST method to call
+     */
+    public final void setRestMethod(String restMethod) {
+        this.restMethod = restMethod;
     }
 
     /**
@@ -1107,6 +1136,30 @@ public class Request {
     public static RequestAsyncTask executePostRequestAsync(Session session, String graphPath, GraphObject graphObject,
             Callback callback) {
         return newPostRequest(session, graphPath, graphObject, callback).executeAsync();
+    }
+
+    /**
+     * Starts a new Request configured to make a call to the Facebook REST API.
+     * <p/>
+     * This should only be called from the UI thread.
+     *
+     * This method is deprecated. Prefer to call Request.newRestRequest(...).executeAsync();
+     *
+     * @param session
+     *            the Session to use, or null; if non-null, the session must be in an opened state
+     * @param restMethod
+     *            the method in the Facebook REST API to execute
+     * @param parameters
+     *            additional parameters to pass along with the Graph API request; parameters must be Strings, Numbers,
+     *            Bitmaps, Dates, or Byte arrays.
+     * @param httpMethod
+     *            the HTTP method to use for the request; must be one of GET, POST, or DELETE
+     * @return a RequestAsyncTask that is executing the request
+     */
+    @Deprecated
+    public static RequestAsyncTask executeRestRequestAsync(Session session, String restMethod, Bundle parameters,
+            HttpMethod httpMethod) {
+        return newRestRequest(session, restMethod, parameters, httpMethod).executeAsync();
     }
 
     /**
@@ -1337,6 +1390,10 @@ public class Request {
      * @throws IllegalArgumentException
      */
     public static HttpURLConnection toHttpConnection(RequestBatch requests) {
+
+        for (Request request : requests) {
+            request.validate();
+        }
 
         URL url = null;
         try {
@@ -1644,8 +1701,8 @@ public class Request {
     @Override
     public String toString() {
         return new StringBuilder().append("{Request: ").append(" session: ").append(session).append(", graphPath: ")
-                .append(graphPath).append(", graphObject: ").append(graphObject)
-                .append(", httpMethod: ").append(httpMethod).append(", parameters: ")
+                .append(graphPath).append(", graphObject: ").append(graphObject).append(", restMethod: ")
+                .append(restMethod).append(", httpMethod: ").append(httpMethod).append(", parameters: ")
                 .append(parameters).append("}").toString();
     }
 
@@ -1686,11 +1743,12 @@ public class Request {
         }
     }
 
-    private static HttpURLConnection createConnection(URL url) throws IOException {
+    static HttpURLConnection createConnection(URL url) throws IOException {
         HttpURLConnection connection;
         connection = (HttpURLConnection) url.openConnection();
 
         connection.setRequestProperty(USER_AGENT_HEADER, getUserAgent());
+        connection.setRequestProperty(CONTENT_TYPE_HEADER, getMimeContentType());
         connection.setRequestProperty(ACCEPT_LANGUAGE_HEADER, Locale.getDefault().toString());
 
         connection.setChunkedStreamingMode(0);
@@ -1707,7 +1765,7 @@ public class Request {
                 Logger.registerAccessToken(accessToken);
                 this.parameters.putString(ACCESS_TOKEN_PARAM, accessToken);
             }
-        } else if (!skipClientToken && !this.parameters.containsKey(ACCESS_TOKEN_PARAM)) {
+        } else if (!this.parameters.containsKey(ACCESS_TOKEN_PARAM)) {
             String appID = Settings.getApplicationId();
             String clientToken = Settings.getClientToken();
             if (!Utility.isNullOrEmpty(appID) && !Utility.isNullOrEmpty(clientToken)) {
@@ -1754,7 +1812,13 @@ public class Request {
             throw new FacebookException("Can't override URL for a batch request");
         }
 
-        String baseUrl = getGraphPathWithVersion();
+        String baseUrl;
+        if (this.restMethod != null) {
+            baseUrl = getRestPathWithVersion();
+        } else {
+            baseUrl = getGraphPathWithVersion();
+        }
+
         addCommonParameters();
         return appendParametersToBaseUrl(baseUrl);
     }
@@ -1764,13 +1828,18 @@ public class Request {
             return overriddenURL.toString();
         }
 
-        String graphBaseUrlBase;
-        if (this.getHttpMethod() == HttpMethod.POST && graphPath != null && graphPath.endsWith(VIDEOS_SUFFIX)) {
-            graphBaseUrlBase = ServerProtocol.getGraphVideoUrlBase();
+        String baseUrl;
+        if (this.restMethod != null) {
+            baseUrl = String.format("%s/%s", ServerProtocol.getRestUrlBase(), getRestPathWithVersion());
         } else {
-            graphBaseUrlBase = ServerProtocol.getGraphUrlBase();
+            String graphBaseUrlBase;
+            if (this.getHttpMethod() == HttpMethod.POST && graphPath != null && graphPath.endsWith(VIDEOS_SUFFIX)) {
+                graphBaseUrlBase = ServerProtocol.getGraphVideoUrlBase();
+            } else {
+                graphBaseUrlBase = ServerProtocol.getGraphUrlBase();
+            }
+            baseUrl = String.format("%s/%s", graphBaseUrlBase, getGraphPathWithVersion());
         }
-        String baseUrl = String.format("%s/%s", graphBaseUrlBase, getGraphPathWithVersion());
 
         addCommonParameters();
         return appendParametersToBaseUrl(baseUrl);
@@ -1782,6 +1851,14 @@ public class Request {
             return this.graphPath;
         }
         return String.format("%s/%s", this.version, this.graphPath);
+    }
+
+    private String getRestPathWithVersion() {
+        Matcher matcher = versionPattern.matcher(this.restMethod);
+        if (matcher.matches()) {
+            return this.restMethod;
+        }
+        return String.format("%s/%s/%s", this.version, ServerProtocol.REST_METHOD_BASE, this.restMethod);
     }
 
     private static class Attachment {
@@ -1855,6 +1932,12 @@ public class Request {
         batch.put(batchEntry);
     }
 
+    private void validate() {
+        if (graphPath != null && restMethod != null) {
+            throw new IllegalArgumentException("Only one of a graph path or REST method may be specified per request.");
+        }
+    }
+
     private static boolean hasOnProgressCallbacks(RequestBatch requests) {
         for (RequestBatch.Callback callback : requests.getCallbacks()) {
             if (callback instanceof RequestBatch.OnProgressCallback) {
@@ -1871,37 +1954,14 @@ public class Request {
         return false;
     }
 
-    private static void setConnectionContentType(HttpURLConnection connection, boolean shouldUseGzip) {
-        if (shouldUseGzip) {
-            connection.setRequestProperty(CONTENT_TYPE_HEADER, "application/x-www-form-urlencoded");
-            connection.setRequestProperty(CONTENT_ENCODING_HEADER, "gzip");
-        } else {
-            connection.setRequestProperty(CONTENT_TYPE_HEADER, getMimeContentType());
-        }
-    }
-
-    private static boolean isGzipCompressible(RequestBatch requests) {
-        for(Request request : requests) {
-            for (String key : request.parameters.keySet()) {
-                Object value = request.parameters.get(key);
-                if (isSupportedAttachmentType(value)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     final static void serializeToUrlConnection(RequestBatch requests, HttpURLConnection connection)
     throws IOException, JSONException {
         Logger logger = new Logger(LoggingBehavior.REQUESTS, "Request");
 
         int numRequests = requests.size();
-        boolean shouldUseGzip = isGzipCompressible(requests);
 
         HttpMethod connectionHttpMethod = (numRequests == 1) ? requests.get(0).httpMethod : HttpMethod.POST;
         connection.setRequestMethod(connectionHttpMethod.name());
-        setConnectionContentType(connection, shouldUseGzip);
 
         URL url = connection.getURL();
         logger.append("Request:\n");
@@ -1926,37 +1986,34 @@ public class Request {
 
         OutputStream outputStream = null;
         try {
-            outputStream = new BufferedOutputStream(connection.getOutputStream());
-            if (shouldUseGzip) {
-                outputStream = new GZIPOutputStream(outputStream);
-            }
-
             if (hasOnProgressCallbacks(requests)) {
                 ProgressNoopOutputStream countingStream = null;
                 countingStream = new ProgressNoopOutputStream(requests.getCallbackHandler());
-                processRequest(requests, null, numRequests, url, countingStream, shouldUseGzip);
+                processRequest(requests, null, numRequests, url, countingStream);
 
                 int max = countingStream.getMaxProgress();
                 Map<Request, RequestProgress> progressMap = countingStream.getProgressMap();
 
-                outputStream = new ProgressOutputStream(outputStream, requests, progressMap, max);
+                BufferedOutputStream buffered = new BufferedOutputStream(connection.getOutputStream());
+                outputStream = new ProgressOutputStream(buffered, requests, progressMap, max);
+            }
+            else {
+                outputStream = new BufferedOutputStream(connection.getOutputStream());
             }
 
-            processRequest(requests, logger, numRequests, url, outputStream, shouldUseGzip);
+            processRequest(requests, logger, numRequests, url, outputStream);
         }
         finally {
-            if (outputStream != null) {
-                outputStream.close();
-            }
+            outputStream.close();
         }
 
         logger.log();
     }
 
-    private static void processRequest(RequestBatch requests, Logger logger, int numRequests, URL url, OutputStream outputStream, boolean shouldUseGzip)
+    private static void processRequest(RequestBatch requests, Logger logger, int numRequests, URL url, OutputStream outputStream)
             throws IOException, JSONException
     {
-        Serializer serializer = new Serializer(outputStream, logger, shouldUseGzip);
+        Serializer serializer = new Serializer(outputStream, logger);
 
         if (numRequests == 1) {
             Request request = requests.get(0);
@@ -2003,18 +2060,6 @@ public class Request {
         }
     }
 
-    private static boolean isMeRequest(String path) {
-        Matcher matcher = versionPattern.matcher(path);
-        if (matcher.matches()) {
-            // Group 1 contains the path aside from version
-            path = matcher.group(1);
-        }
-        if (path.startsWith("me/") || path.startsWith("/me/")) {
-            return true;
-        }
-        return false;
-    }
-
     private static void processGraphObject(GraphObject graphObject, String path, KeyValueSerializer serializer)
             throws IOException {
         // In general, graph objects are passed by reference (ID/URL). But if this is an OG Action,
@@ -2024,7 +2069,7 @@ public class Request {
         // but passing the OG Action type as a substituted parameter is unlikely.
         // It looks like an OG Action if it's posted to me/namespace:action[?other=stuff].
         boolean isOGAction = false;
-        if (isMeRequest(path)) {
+        if (path.startsWith("me/") || path.startsWith("/me/")) {
             int colonLocation = path.indexOf(":");
             int questionMarkLocation = path.indexOf("?");
             isOGAction = colonLocation > 3 && (questionMarkLocation == -1 || colonLocation < questionMarkLocation);
@@ -2066,8 +2111,6 @@ public class Request {
                     processGraphObjectProperty(key, jsonObject.optString("id"), serializer, passByValue);
                 } else if (jsonObject.has("url")) {
                     processGraphObjectProperty(key, jsonObject.optString("url"), serializer, passByValue);
-                } else if (jsonObject.has(NativeProtocol.OPEN_GRAPH_CREATE_OBJECT_KEY)) {
-                    processGraphObjectProperty(key, jsonObject.toString(), serializer, passByValue);
                 }
             }
         } else if (JSONArray.class.isAssignableFrom(valueClass)) {
@@ -2197,12 +2240,10 @@ public class Request {
         private final OutputStream outputStream;
         private final Logger logger;
         private boolean firstWrite = true;
-        private boolean useUrlEncode = false;
 
-        public Serializer(OutputStream outputStream, Logger logger, boolean useUrlEncode) {
+        public Serializer(OutputStream outputStream, Logger logger) {
             this.outputStream = outputStream;
             this.logger = logger;
-            this.useUrlEncode = useUrlEncode;
         }
 
         public void writeObject(String key, Object value, Request request) throws IOException {
@@ -2328,49 +2369,35 @@ public class Request {
         }
 
         public void writeRecordBoundary() throws IOException {
-            if (!useUrlEncode) {
-                writeLine("--%s", MIME_BOUNDARY);
-            } else {
-                this.outputStream.write("&".getBytes());
-            }
+            writeLine("--%s", MIME_BOUNDARY);
         }
 
         public void writeContentDisposition(String name, String filename, String contentType) throws IOException {
-            if (!useUrlEncode) {
-                write("Content-Disposition: form-data; name=\"%s\"", name);
-                if (filename != null) {
-                    write("; filename=\"%s\"", filename);
-                }
-                writeLine(""); // newline after Content-Disposition
-                if (contentType != null) {
-                    writeLine("%s: %s", CONTENT_TYPE_HEADER, contentType);
-                }
-                writeLine(""); // blank line before content
-            } else {
-                this.outputStream.write(String.format("%s=", name).getBytes());
+            write("Content-Disposition: form-data; name=\"%s\"", name);
+            if (filename != null) {
+                write("; filename=\"%s\"", filename);
             }
+            writeLine(""); // newline after Content-Disposition
+            if (contentType != null) {
+                writeLine("%s: %s", CONTENT_TYPE_HEADER, contentType);
+            }
+            writeLine(""); // blank line before content
         }
 
         public void write(String format, Object... args) throws IOException {
-            if (!useUrlEncode) {
-                if (firstWrite) {
-                    // Prepend all of our output with a boundary string.
-                    this.outputStream.write("--".getBytes());
-                    this.outputStream.write(MIME_BOUNDARY.getBytes());
-                    this.outputStream.write("\r\n".getBytes());
-                    firstWrite = false;
-                }
-                this.outputStream.write(String.format(format, args).getBytes());
-            } else {
-                this.outputStream.write(URLEncoder.encode(String.format(format, args), "UTF-8").getBytes());
+            if (firstWrite) {
+                // Prepend all of our output with a boundary string.
+                this.outputStream.write("--".getBytes());
+                this.outputStream.write(MIME_BOUNDARY.getBytes());
+                this.outputStream.write("\r\n".getBytes());
+                firstWrite = false;
             }
+            this.outputStream.write(String.format(format, args).getBytes());
         }
 
         public void writeLine(String format, Object... args) throws IOException {
             write(format, args);
-            if (!useUrlEncode) {
-                write("\r\n");
-            }
+            write("\r\n");
         }
 
     }

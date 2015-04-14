@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.leva.nick.leva.common.activities.SampleActivityBase;
@@ -15,18 +16,27 @@ import com.leva.nick.leva.common.logger.LogWrapper;
 import com.leva.nick.leva.common.logger.MessageOnlyLogFilter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.facebook.SessionDefaultAudience;
 import com.sromku.simple.fb.Permission;
 import com.sromku.simple.fb.SimpleFacebook;
 import com.sromku.simple.fb.SimpleFacebookConfiguration;
+import com.sromku.simple.fb.entities.Profile;
+import com.sromku.simple.fb.listeners.OnFriendsListener;
 import com.sromku.simple.fb.listeners.OnLoginListener;
+import com.sromku.simple.fb.listeners.OnProfileListener;
+import com.sromku.simple.fb.utils.Attributes;
+import com.sromku.simple.fb.utils.PictureAttributes;
 
 
 public class TabLayoutA extends SampleActivityBase {
 
     public static final String TAG = "TabLayout";
+    private static final String APP_ID = "371005393088854";
+    private static final String APP_NAMESPACE = "leva";
 
+    private SimpleFacebook mSimpleFacebook;
 
     private boolean mLogShown;
     private ArrayList<SpotsMarker> mMyMarkersArray = new ArrayList<SpotsMarker>();
@@ -42,6 +52,25 @@ public class TabLayoutA extends SampleActivityBase {
 
         setContentView(R.layout.activity_tab_layout);
 
+        Permission[] permissions = new Permission[] {
+                Permission.PUBLIC_PROFILE,
+                Permission.USER_FRIENDS
+        };
+
+        SimpleFacebookConfiguration configuration = new SimpleFacebookConfiguration.Builder()
+                .setAppId(APP_ID)
+                .setNamespace(APP_NAMESPACE)
+                .setPermissions(permissions)
+                .setDefaultAudience(SessionDefaultAudience.FRIENDS)
+                .setAskForAllPermissionsAtOnce(false)
+                .build();
+
+        SimpleFacebook.setConfiguration(configuration);
+
+        mSimpleFacebook = SimpleFacebook.getInstance(this);
+
+        setLogin();
+
         initMarkers();
 
         if (savedInstanceState == null) {
@@ -50,7 +79,6 @@ public class TabLayoutA extends SampleActivityBase {
             transaction.replace(R.id.content_fragment, fragment, TAG);
             transaction.commit();
         }
-
     }
 
 
@@ -58,6 +86,18 @@ public class TabLayoutA extends SampleActivityBase {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_tab_layout, menu);
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        mSimpleFacebook.onActivityResult(this, requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mSimpleFacebook = SimpleFacebook.getInstance(this);
     }
 
 
@@ -113,5 +153,38 @@ public class TabLayoutA extends SampleActivityBase {
 //
 //        out.close();
 
+    }
+
+    private void setLogin() {
+        // Login listener
+        final OnLoginListener onLoginListener = new OnLoginListener() {
+
+            @Override
+            public void onLogin() {
+                //getFriendsList();
+                Toast.makeText(getApplication(), "Logged in", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNotAcceptingPermissions(Permission.Type type) {
+                Toast.makeText(getApplication(), String.format("You didn't accept %s permissions", type.name()), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onThinking() {
+
+            }
+
+            @Override
+            public void onException(Throwable throwable) {
+
+            }
+
+            @Override
+            public void onFail(String reason) {
+
+            }
+        };
+        mSimpleFacebook.login(onLoginListener);
     }
 }

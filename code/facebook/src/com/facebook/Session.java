@@ -16,7 +16,6 @@
 
 package com.facebook;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.*;
 import android.content.pm.ResolveInfo;
@@ -25,10 +24,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
-import com.facebook.internal.NativeProtocol;
-import com.facebook.internal.SessionAuthorizationType;
-import com.facebook.internal.Utility;
-import com.facebook.internal.Validate;
+import com.facebook.internal.*;
 import com.facebook.model.GraphMultiResult;
 import com.facebook.model.GraphObject;
 import com.facebook.model.GraphObjectList;
@@ -128,6 +124,8 @@ public class Session implements Serializable {
     private static final String PUBLISH_PERMISSION_PREFIX = "publish";
     private static final String MANAGE_PERMISSION_PREFIX = "manage";
 
+    private static final String BASIC_INFO_PERMISSION = "basic_info";
+
     @SuppressWarnings("serial")
     private static final Set<String> OTHER_PUBLISH_PERMISSIONS = new HashSet<String>() {{
         add("ads_management");
@@ -143,10 +141,13 @@ public class Session implements Serializable {
     private AuthorizationRequest pendingAuthorizationRequest;
     private AuthorizationClient authorizationClient;
 
+    private Set<String> requestedPermissions = new HashSet<String>();
+
     // The following are not serialized with the Session object
     private volatile Bundle authorizationBundle;
     private final List<StatusCallback> callbacks;
     private Handler handler;
+    private AutoPublishAsyncTask autoPublishAsyncTask;
     // This is the object that synchronizes access to state and tokenInfo
     private final Object lock = new Object();
     private TokenCachingStrategy tokenCachingStrategy;
@@ -191,7 +192,6 @@ public class Session implements Serializable {
      * class should not be modified. If serializations formats change,
      * create a new class SerializationProxyVx.
      */
-    @SuppressWarnings("UnusedDeclaration")
     private static class SerializationProxyV2 implements Serializable {
         private static final long serialVersionUID = 7663436173185080064L;
         private final String applicationId;
@@ -250,6 +250,7 @@ public class Session implements Serializable {
         this.tokenInfo = tokenInfo;
         this.lastAttemptedTokenExtendDate = lastAttemptedTokenExtendDate;
         this.pendingAuthorizationRequest = pendingAuthorizationRequest;
+        this.requestedPermissions = requestedPermissions;
         handler = new Handler(Looper.getMainLooper());
         currentTokenRefreshRequest = null;
         tokenCachingStrategy = null;
@@ -302,14 +303,14 @@ public class Session implements Serializable {
                 // If expired or we require new permissions, clear out the
                 // current token cache.
                 tokenCachingStrategy.clear();
-                this.tokenInfo = AccessToken.createEmptyToken();
+                this.tokenInfo = AccessToken.createEmptyToken(Collections.<String>emptyList());
             } else {
                 // Otherwise we have a valid token, so use it.
                 this.tokenInfo = AccessToken.createFromCache(tokenState);
                 this.state = SessionState.CREATED_TOKEN_LOADED;
             }
         } else {
-            this.tokenInfo = AccessToken.createEmptyToken();
+            this.tokenInfo = AccessToken.createEmptyToken(Collections.<String>emptyList());
         }
     }
 
@@ -436,7 +437,20 @@ public class Session implements Serializable {
      */
     public final List<String> getDeclinedPermissions() {
         synchronized (this.lock) {
-            return (this.tokenInfo == null) ? null : this.tokenInfo.getDeclinedPermissions();
+            List<String> grantedPermissions = getPermissions();
+            List<String> declinedPermissions = new ArrayList<String>(requestedPermissions);
+            if (grantedPermissions != null) {
+                boolean removedBasicInfo = false;
+                for (String permission : grantedPermissions) {
+                    declinedPermissions.remove(permission);
+                    // We can remove "basic_info" permission if we have any granted permissions
+                    if (!removedBasicInfo && requestedPermissions.contains(BASIC_INFO_PERMISSION)) {
+                        declinedPermissions.remove(BASIC_INFO_PERMISSION);
+                        removedBasicInfo = true;
+                    }
+                }
+            }
+            return declinedPermissions;
         }
     }
 
@@ -550,6 +564,8 @@ public class Session implements Serializable {
             state = SessionState.OPENED;
             this.postStateChange(oldState, state, null);
         }
+
+        autoPublishAsync();
     }
 
     /**
@@ -607,12 +623,11 @@ public class Session implements Serializable {
         request.setCallback(new Request.Callback() {
             @Override
             public void onCompleted(Response response) {
-                PermissionsPair permissionsPair = handlePermissionResponse(response);
-                if (permissionsPair != null) {
+                List<String> grantedPermissions = handlePermissionResponse(Session.this, response);
+                if (grantedPermissions != null) {
                     // Update our token with the refreshed permissions
                     synchronized (lock) {
-                        tokenInfo = AccessToken.createFromTokenWithRefreshedPermissions(tokenInfo,
-                                permissionsPair.getGrantedPermissions(), permissionsPair.getDeclinedPermissions());
+                        tokenInfo = AccessToken.createFromTokenWithRefreshedPermissions(tokenInfo, grantedPermissions);
                         postStateChange(state, SessionState.OPENED_TOKEN_UPDATED, null);
                     }
                 }
@@ -622,34 +637,15 @@ public class Session implements Serializable {
     }
 
     /**
-     * Internal helper class that is used to hold two different permission lists (granted and declined)
-     */
-    static class PermissionsPair {
-        List<String> grantedPermissions;
-        List<String> declinedPermissions;
-
-        public PermissionsPair(List<String> grantedPermissions, List<String> declinedPermissions) {
-            this.grantedPermissions = grantedPermissions;
-            this.declinedPermissions = declinedPermissions;
-        }
-
-        public List<String> getGrantedPermissions() {
-            return grantedPermissions;
-        }
-
-        public List<String> getDeclinedPermissions() {
-            return declinedPermissions;
-        }
-    }
-    /**
      * This parses a server response to a call to me/permissions.  It will return the list of granted permissions.
      * It will optionally update a session with the requested permissions.  It also handles the distinction between
      * 1.0 and 2.0 calls to the endpoint.
      *
+     * @param session An optional session to update the requested permission set
      * @param response The server response
      * @return A list of granted permissions or null if an error
      */
-    static PermissionsPair handlePermissionResponse(Response response) {
+    static List<String> handlePermissionResponse(Session session, Response response) {
         if (response.getError() != null) {
             return null;
         }
@@ -663,22 +659,18 @@ public class Session implements Serializable {
         if (data == null || data.size() == 0) {
             return null;
         }
+        List<String> allPermissions = new ArrayList<String>(data.size());
         List<String> grantedPermissions = new ArrayList<String>(data.size());
-        List<String> declinedPermissions = new ArrayList<String>(data.size());
 
         // Check if we are dealing with v2.0 or v1.0 behavior until the server is updated
         GraphObject firstObject = data.get(0);
         if (firstObject.getProperty("permission") != null) { // v2.0
             for (GraphObject graphObject : data) {
                 String permission = (String) graphObject.getProperty("permission");
-                if (permission.equals("installed")) {
-                    continue;
-                }
                 String status = (String) graphObject.getProperty("status");
+                allPermissions.add(permission);
                 if(status.equals("granted")) {
                     grantedPermissions.add(permission);
-                } else if (status.equals("declined")) {
-                    declinedPermissions.add(permission);
                 }
             }
         } else { // v1.0
@@ -687,13 +679,18 @@ public class Session implements Serializable {
                 if (entry.getKey().equals("installed")) {
                     continue;
                 }
+                allPermissions.add(entry.getKey());
                 if ((Integer)entry.getValue() == 1) {
                     grantedPermissions.add(entry.getKey());
                 }
             }
         }
 
-        return new PermissionsPair(grantedPermissions, declinedPermissions);
+        // If we have a session track all the permissions that were requested
+        if (session != null) {
+            session.addRequestedPermissions(allPermissions);
+        }
+        return grantedPermissions;
     }
 
     /**
@@ -855,8 +852,8 @@ public class Session implements Serializable {
     }
 
     private Object writeReplace() {
-        return new SerializationProxyV1(applicationId, state, tokenInfo,
-                lastAttemptedTokenExtendDate, false, pendingAuthorizationRequest);
+        return new SerializationProxyV2(applicationId, state, tokenInfo,
+                lastAttemptedTokenExtendDate, false, pendingAuthorizationRequest, requestedPermissions);
     }
 
     // have a readObject that throws to prevent spoofing
@@ -1149,9 +1146,13 @@ public class Session implements Serializable {
 
         request.setApplicationId(applicationId);
 
+        autoPublishAsync();
+
         logAuthorizationStart();
 
         started = tryLoginActivity(request);
+
+        addRequestedPermissions(request.getPermissions());
 
         pendingAuthorizationRequest.loggingExtras.put(AuthorizationClient.EVENT_EXTRAS_TRY_LOGIN_ACTIVITY,
                 started ? AppEventsConstants.EVENT_PARAM_VALUE_YES : AppEventsConstants.EVENT_PARAM_VALUE_NO);
@@ -1513,6 +1514,14 @@ public class Session implements Serializable {
         }
     }
 
+    private void addRequestedPermissions(List<String> permissions) {
+        synchronized (this.lock) {
+            for(String permission : permissions) {
+                requestedPermissions.add(permission);
+            }
+        }
+    }
+
     void postStateChange(final SessionState oldState, final SessionState newState, final Exception exception) {
         // When we request new permissions, we stay in SessionState.OPENED_TOKEN_UPDATED,
         // but we still want notifications of the state change since permissions are
@@ -1524,7 +1533,7 @@ public class Session implements Serializable {
         }
 
         if (newState.isClosed()) {
-            this.tokenInfo = AccessToken.createEmptyToken();
+            this.tokenInfo = AccessToken.createEmptyToken(Collections.<String>emptyList());
         }
 
         // Need to schedule the callbacks inside the same queue to preserve ordering.
@@ -1667,13 +1676,9 @@ public class Session implements Serializable {
         public void onServiceDisconnected(ComponentName arg) {
             cleanup();
 
-            try {
-                // We returned an error so there's no point in
-                // keeping the binding open.
-                staticContext.unbindService(TokenRefreshRequest.this);
-            } catch (IllegalArgumentException ex) {
-                // Do nothing, the connection was already unbound
-            }
+            // We returned an error so there's no point in
+            // keeping the binding open.
+            staticContext.unbindService(TokenRefreshRequest.this);
         }
 
         private void cleanup() {
@@ -1740,12 +1745,6 @@ public class Session implements Serializable {
      * @see Session#open open
      */
     public interface StatusCallback {
-        /**
-         * The function that is called when status of the session changes.
-         * @param session   The session that was updated.
-         * @param state     The new state of the session.
-         * @param exception The exception that is related to state change, may be null.
-         */
         public void call(Session session, SessionState state, Exception exception);
     }
 
@@ -1828,6 +1827,57 @@ public class Session implements Serializable {
         public void startActivityForResult(Intent intent, int requestCode);
 
         public Activity getActivityContext();
+    }
+
+    @SuppressWarnings("deprecation")
+    private void autoPublishAsync() {
+        AutoPublishAsyncTask asyncTask = null;
+        synchronized (this) {
+            if (autoPublishAsyncTask == null && Settings.getShouldAutoPublishInstall()) {
+                // copy the application id to guarantee thread safety against our container.
+                String applicationId = Session.this.applicationId;
+
+                // skip publish if we don't have an application id.
+                if (applicationId != null) {
+                    asyncTask = autoPublishAsyncTask = new AutoPublishAsyncTask(applicationId, staticContext);
+                }
+            }
+        }
+
+        if (asyncTask != null) {
+            asyncTask.execute();
+        }
+    }
+
+    /**
+     * Async implementation to allow auto publishing to not block the ui thread.
+     */
+    private class AutoPublishAsyncTask extends AsyncTask<Void, Void, Void> {
+        private final String mApplicationId;
+        private final Context mApplicationContext;
+
+        public AutoPublishAsyncTask(String applicationId, Context context) {
+            mApplicationId = applicationId;
+            mApplicationContext = context.getApplicationContext();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                Settings.publishInstallAndWaitForResponse(mApplicationContext, mApplicationId, true);
+            } catch (Exception e) {
+                Utility.logd("Facebook-publish", e);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            // always clear out the publisher to allow other invocations.
+            synchronized (Session.this) {
+                autoPublishAsyncTask = null;
+            }
+        }
     }
 
     /**

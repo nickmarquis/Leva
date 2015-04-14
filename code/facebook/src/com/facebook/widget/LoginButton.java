@@ -19,7 +19,6 @@ package com.facebook.widget;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -34,14 +33,15 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+
 import com.facebook.*;
 import com.facebook.android.R;
 import com.facebook.internal.AnalyticsEvents;
+import com.facebook.model.GraphUser;
 import com.facebook.internal.SessionAuthorizationType;
 import com.facebook.internal.SessionTracker;
 import com.facebook.internal.Utility;
 import com.facebook.internal.Utility.FetchedAppSettings;
-import com.facebook.model.GraphUser;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -96,7 +96,6 @@ public class LoginButton extends Button {
     private ToolTipPopup.Style nuxStyle = ToolTipPopup.Style.BLUE;
     private ToolTipMode nuxMode = ToolTipMode.DEFAULT;
     private long nuxDisplayTime = ToolTipPopup.DEFAULT_POPUP_DISPLAY_TIME;
-    private ToolTipPopup nuxPopup;
 
     static class LoginButtonProperties {
         private SessionDefaultAudience defaultAudience = SessionDefaultAudience.FRIENDS;
@@ -382,7 +381,7 @@ public class LoginButton extends Button {
      * manage the setting of permissions outside of the LoginButton class altogether
      * (by managing the session explicitly).
      *
-     * @param permissions the publish permissions to use
+     * @param permissions the read permissions to use
      *
      * @throws UnsupportedOperationException if setReadPermissions has been called
      * @throws IllegalArgumentException if permissions is null or empty
@@ -408,7 +407,7 @@ public class LoginButton extends Button {
      * manage the setting of permissions outside of the LoginButton class altogether
      * (by managing the session explicitly).
      *
-     * @param permissions the publish permissions to use
+     * @param permissions the read permissions to use
      *
      * @throws UnsupportedOperationException if setReadPermissions has been called
      * @throws IllegalArgumentException if permissions is null or empty
@@ -545,16 +544,6 @@ public class LoginButton extends Button {
     }
 
     /**
-     * Dismisses the Nux Tooltip if it is currently visible
-     */
-    public void dismissToolTip() {
-        if (nuxPopup != null) {
-            nuxPopup.dismiss();
-            nuxPopup = null;
-        }
-    }
-
-    /**
      * Provides an implementation for {@link Activity#onActivityResult
      * onActivityResult} that updates the Session based on information returned
      * during the authorization flow. The Activity containing this view
@@ -645,7 +634,7 @@ public class LoginButton extends Button {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if (!nuxChecked && nuxMode != ToolTipMode.NEVER_DISPLAY && !isInEditMode()) {
+        if (!nuxChecked && nuxMode != ToolTipMode.NEVER_DISPLAY) {
             nuxChecked = true;
             checkNuxSettings();
         }
@@ -659,10 +648,10 @@ public class LoginButton extends Button {
     }
     
     private void displayNux(String nuxString) {
-        nuxPopup = new ToolTipPopup(nuxString, this);
-        nuxPopup.setStyle(nuxStyle);
-        nuxPopup.setNuxDisplayTime(nuxDisplayTime);
-        nuxPopup.show();
+        ToolTipPopup popup = new ToolTipPopup(nuxString, this);
+        popup.setStyle(nuxStyle);
+        popup.setNuxDisplayTime(nuxDisplayTime);
+        popup.show();
     }
     
     private void checkNuxSettings() {
@@ -694,16 +683,6 @@ public class LoginButton extends Button {
         super.onDetachedFromWindow();
         if (sessionTracker != null) {
             sessionTracker.stopTracking();
-        }
-        dismissToolTip();
-    }
-
-    @Override
-    protected void onVisibilityChanged(View changedView, int visibility) {
-        super.onVisibilityChanged(changedView, visibility);
-        // If the visibility is not VISIBLE, we want to dismiss the nux if it is there
-        if (visibility != VISIBLE) {
-            dismissToolTip();
         }
     }
 
@@ -844,11 +823,6 @@ public class LoginButton extends Button {
                         openRequest = new Session.OpenRequest(parentFragment);
                     } else if (context instanceof Activity) {
                         openRequest = new Session.OpenRequest((Activity)context);
-                    } else if (context instanceof ContextWrapper) {
-                        Context baseContext = ((ContextWrapper)context).getBaseContext();
-                        if (baseContext instanceof Activity) {
-                            openRequest = new Session.OpenRequest((Activity)baseContext);
-                        }
                     }
 
                     if (openRequest != null) {

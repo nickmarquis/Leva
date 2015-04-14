@@ -18,12 +18,12 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:loginView="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:background="@drawable/com_facebook_usersettingsfragment_background_gradient" >
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:orientation="vertical">
 
         <ImageView
@@ -37,7 +37,7 @@
 
         <TextView
             android:id="@+id/com_facebook_usersettingsfragment_profile_name"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="100dp"
             android:lines="1"
             android:textSize="16sp"
@@ -57,4 +57,4 @@
     
     </LinearLayout>
 </ScrollView>
-<!-- From: file:/home/nick/Documents/Leva/code/facebook/res/layout/com_facebook_usersettingsfragment.xml --><!-- From: file:/home/nick/Documents/Leva/code/Simple%20Facebook/build/intermediates/exploded-aar/com.facebook.android/facebook/3.23.1/res/layout/com_facebook_usersettingsfragment.xml -->
+<!-- From: file:/home/nick/Documents/Leva/code/facebook/res/layout/com_facebook_usersettingsfragment.xml --><!-- From: file:/home/nick/Documents/Leva/code/Simple%20Facebook/build/intermediates/exploded-aar/code/facebook/unspecified/res/layout/com_facebook_usersettingsfragment.xml -->

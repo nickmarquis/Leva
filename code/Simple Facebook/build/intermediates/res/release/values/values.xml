@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/home/nick/Documents/Leva/code/Simple%20Facebook/build/intermediates/exploded-aar/com.facebook.android/facebook/3.23.1/res/values/values.xml -->
+    <!-- From: file:/home/nick/Documents/Leva/code/Simple%20Facebook/build/intermediates/exploded-aar/code/facebook/unspecified/res/values/values.xml -->
     <eat-comment/>
     <color name="com_facebook_blue">#3B5998</color>
-    <color name="com_facebook_likeboxcountview_border_color">#6a7180</color>
-    <color name="com_facebook_likeboxcountview_text_color">#6a7180</color>
-    <color name="com_facebook_likebutton_text_color">#FFFFFF</color>
-    <color name="com_facebook_likeview_text_color">#6a7180</color>
     <color name="com_facebook_loginview_text_color">#FFFFFF</color>
     <color name="com_facebook_picker_search_bar_background">#f5f5f7</color>
     <color name="com_facebook_picker_search_bar_text">#bcbdc2</color>
@@ -14,26 +10,10 @@
     <color name="com_facebook_usersettingsfragment_connected_text_color">#FFFFFF</color>
     <color name="com_facebook_usersettingsfragment_not_connected_text_color">#A6AED7</color>
     <declare-styleable name="com_facebook_friend_picker_fragment"><attr format="boolean" name="multi_select"/></declare-styleable>
-    <declare-styleable name="com_facebook_like_view"><attr format="color" name="foreground_color"/><attr format="string" name="object_id"/><attr name="style"><enum name="standard" value="0"/><enum name="button" value="1"/><enum name="box_count" value="2"/></attr><attr name="auxiliary_view_position"><enum name="bottom" value="0"/><enum name="inline" value="1"/><enum name="top" value="2"/></attr><attr name="horizontal_alignment"><enum name="center" value="0"/><enum name="left" value="1"/><enum name="right" value="2"/></attr></declare-styleable>
     <declare-styleable name="com_facebook_login_view"><attr format="boolean" name="confirm_logout"/><attr format="boolean" name="fetch_user_info"/><attr format="string" name="login_text"/><attr format="string" name="logout_text"/></declare-styleable>
     <declare-styleable name="com_facebook_picker_fragment"><attr format="boolean" name="show_pictures"/><attr format="string" name="extra_fields"/><attr format="boolean" name="show_title_bar"/><attr format="string" name="title_text"/><attr format="string" name="done_button_text"/><attr format="reference" name="title_bar_background"/><attr format="reference" name="done_button_background"/></declare-styleable>
     <declare-styleable name="com_facebook_place_picker_fragment"><attr format="integer" name="radius_in_meters"/><attr format="integer" name="results_limit"/><attr format="string" name="search_text"/><attr format="boolean" name="show_search_box"/></declare-styleable>
     <declare-styleable name="com_facebook_profile_picture_view"><attr name="preset_size"><enum name="small" value="-2"/><enum name="normal" value="-3"/><enum name="large" value="-4"/></attr><attr format="boolean" name="is_cropped"/></declare-styleable>
-    <dimen name="com_facebook_likeboxcountview_border_radius">3dp</dimen>
-    <dimen name="com_facebook_likeboxcountview_border_width">1dp</dimen>
-    <dimen name="com_facebook_likeboxcountview_caret_height">3dp</dimen>
-    <dimen name="com_facebook_likeboxcountview_caret_width">6dp</dimen>
-    <dimen name="com_facebook_likeboxcountview_text_padding">6dp</dimen>
-    <dimen name="com_facebook_likeboxcountview_text_size">11.0sp</dimen>
-    <dimen name="com_facebook_likebutton_compound_drawable_padding">8dp</dimen>
-    <dimen name="com_facebook_likebutton_padding_bottom">0dp</dimen>
-    <dimen name="com_facebook_likebutton_padding_left">8dp</dimen>
-    <dimen name="com_facebook_likebutton_padding_right">8dp</dimen>
-    <dimen name="com_facebook_likebutton_padding_top">0dp</dimen>
-    <dimen name="com_facebook_likebutton_text_size">13.0sp</dimen>
-    <dimen name="com_facebook_likeview_edge_padding">2dp</dimen>
-    <dimen name="com_facebook_likeview_internal_padding">6dp</dimen>
-    <dimen name="com_facebook_likeview_text_size">11.0sp</dimen>
     <dimen name="com_facebook_loginview_compound_drawable_padding">12dp</dimen>
     <dimen name="com_facebook_loginview_padding_bottom">12dp</dimen>
     <dimen name="com_facebook_loginview_padding_left">12dip</dimen>
@@ -51,15 +31,12 @@
     <!-- From: file:/home/nick/Documents/Leva/code/Simple%20Facebook/res/values/strings.xml -->
     <eat-comment/>
     <string name="app_name">Simple Facebook</string>
-    <!-- From: file:/home/nick/Documents/Leva/code/Simple%20Facebook/build/intermediates/exploded-aar/com.facebook.android/facebook/3.23.1/res/values/values.xml -->
+    <!-- From: file:/home/nick/Documents/Leva/code/Simple%20Facebook/build/intermediates/exploded-aar/code/facebook/unspecified/res/values/values.xml -->
     <eat-comment/>
     <string name="com_facebook_choose_friends">Choose Friends</string>
     <string name="com_facebook_dialogloginactivity_ok_button">OK</string>
-    <string name="com_facebook_image_download_unknown_error">Unexpected error while downloading an image.</string>
     <string name="com_facebook_internet_permission_error_message">WebView login requires INTERNET permission</string>
     <string name="com_facebook_internet_permission_error_title">AndroidManifest Error</string>
-    <string name="com_facebook_like_button_liked">Liked</string>
-    <string name="com_facebook_like_button_not_liked">Like</string>
     <string name="com_facebook_loading">Loading...</string>
     <string name="com_facebook_loginview_cancel_action">Cancel</string>
     <string name="com_facebook_loginview_log_in_button">Log in with Facebook</string>
