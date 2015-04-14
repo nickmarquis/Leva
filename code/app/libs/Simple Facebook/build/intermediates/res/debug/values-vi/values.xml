@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- From: file:/home/nick/Documents/Leva/code/libs/Simple%20Facebook/build/intermediates/exploded-aar/@libs@facebook/facebook/4.0.1/res/values-vi/values.xml -->
+    <eat-comment/>
+    <string name="messenger_send_button_text">Gửi</string>
+</resources>

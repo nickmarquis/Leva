@@ -1,5 +1,6 @@
 package com.leva.nick.leva;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
@@ -15,10 +16,17 @@ import com.leva.nick.leva.common.logger.MessageOnlyLogFilter;
 
 import java.util.ArrayList;
 
+import com.facebook.SessionDefaultAudience;
+import com.sromku.simple.fb.Permission;
+import com.sromku.simple.fb.SimpleFacebook;
+import com.sromku.simple.fb.SimpleFacebookConfiguration;
+import com.sromku.simple.fb.listeners.OnLoginListener;
+
 
 public class TabLayoutA extends SampleActivityBase {
 
     public static final String TAG = "TabLayout";
+
 
     private boolean mLogShown;
     private ArrayList<SpotsMarker> mMyMarkersArray = new ArrayList<SpotsMarker>();
@@ -42,13 +50,16 @@ public class TabLayoutA extends SampleActivityBase {
             transaction.replace(R.id.content_fragment, fragment, TAG);
             transaction.commit();
         }
+
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_tab_layout, menu);
         return true;
     }
+
 
     @Override
     public void initializeLogging() {
