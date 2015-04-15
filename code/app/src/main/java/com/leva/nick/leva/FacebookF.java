@@ -2,11 +2,17 @@ package com.leva.nick.leva;
 
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,10 +20,16 @@ import com.leva.nick.leva.common.logger.Log;
 import com.sromku.simple.fb.SimpleFacebook;
 import com.sromku.simple.fb.entities.Profile;
 import com.sromku.simple.fb.listeners.OnFriendsListener;
+import com.sromku.simple.fb.listeners.OnLogoutListener;
 import com.sromku.simple.fb.listeners.OnProfileListener;
 import com.sromku.simple.fb.utils.Attributes;
 import com.sromku.simple.fb.utils.PictureAttributes;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 
 
@@ -67,8 +79,38 @@ public class FacebookF extends Fragment {
 
         mProfileImg = (ImageView) view.findViewById(R.id.imageF);
         mProfileNom = (TextView) view.findViewById(R.id.nomF);
+        ImageButton settings = (ImageButton) view.findViewById(R.id.settingsB);
 
-        //profileNom.setText(mMyProfil.getFirstName() + mMyProfil.getName());
+        settings.setOnClickListener(new ImageButton.OnClickListener() {
+            public void onClick(View v) {
+                OnLogoutListener onLogoutListener = new OnLogoutListener() {
+                    @Override
+                    public void onLogout() {
+                        Log.i("facebook", "You are logged out");
+                        Intent myIntent = new Intent(getActivity(), TabLayoutA.class);
+                        startActivity(myIntent);
+                    }
+
+                    @Override
+                    public void onThinking() {
+
+                    }
+
+                    @Override
+                    public void onException(Throwable throwable) {
+
+                    }
+
+                    @Override
+                    public void onFail(String reason) {
+
+                    }
+                };
+                mSimpleFacebook.logout(onLogoutListener);
+            }
+        });
+
+
 
         return view;
     }
@@ -135,6 +177,36 @@ public class FacebookF extends Fragment {
                 Log.i("Facebook", "My profile id = " + profile.getId());
                 mMyProfil = profile;
                 mProfileNom.setText(mMyProfil.getFirstName() + " " + mMyProfil.getLastName());
+
+                AsyncTask<Void, Void, Bitmap> t = new AsyncTask<Void, Void, Bitmap>(){
+                    protected Bitmap doInBackground(Void... p) {
+                        Bitmap bm = null;
+                        try {
+                            URL aURL = new URL("https://graph.facebook.com/"+mMyProfil.getId()+"/picture?type=large");
+                            URLConnection conn = aURL.openConnection();
+                            conn.setUseCaches(true);
+                            conn.connect();
+                            InputStream is = conn.getInputStream();
+                            BufferedInputStream bis = new BufferedInputStream(is);
+                            bm = BitmapFactory.decodeStream(bis);
+                            bis.close();
+                            is.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        return bm;
+                    }
+
+                    protected void onPostExecute(Bitmap bm){
+
+                        Drawable drawable = new BitmapDrawable(getResources(), bm);
+
+                        mProfileImg.setImageDrawable(drawable);
+
+                    }
+                };
+                t.execute();
+
             }
 
         };
@@ -154,6 +226,19 @@ public class FacebookF extends Fragment {
 
         mSimpleFacebook.getProfile(properties, onProfileListener);
     }
+
+//    public static Bitmap getFacebookProfilePicture(String userID) {
+//        Bitmap bitmap;
+//        try {
+//            URL imageURL = new URL("https://graph.facebook.com/" + userID + "/picture?type=large");
+//            bitmap = BitmapFactory.decodeStream(imageURL.openConnection().getInputStream());
+//
+//        } catch (Exception e) {
+//            return null;
+//        }
+//
+//        return bitmap;
+//    }
 
 
 }

@@ -88,16 +88,16 @@ public class TabFrameF extends Fragment {
                 int col;
                 switch (position) {
                     case 0:
-                        col =  Color.CYAN;
+                        col =  Color.argb(255,0, 113, 188);
                         break;
                     case 1:
-                        col = Color.BLUE;
+                        col = Color.argb(255,0, 113, 188);
                         break;
                     case 2:
-                        col = Color.CYAN;
+                        col = Color.argb(255,0, 113, 188);
                         break;
                     default:
-                        col = Color.BLUE;
+                        col = Color.argb(255,0, 113, 188);
                         break;
                 }
                 return col;
@@ -108,16 +108,16 @@ public class TabFrameF extends Fragment {
                 int col;
                 switch (position) {
                     case 0:
-                        col =  Color.YELLOW;
+                        col =  Color.argb(255,0, 113, 188);
                         break;
                     case 1:
-                        col = Color.YELLOW;
+                        col = Color.argb(255,0, 113, 188);
                         break;
                     case 2:
-                        col = Color.YELLOW;
+                        col = Color.argb(255,0, 113, 188);
                         break;
                     default:
-                        col = Color.YELLOW;
+                        col = Color.argb(255,0, 113, 188);
                         break;
 
                 }

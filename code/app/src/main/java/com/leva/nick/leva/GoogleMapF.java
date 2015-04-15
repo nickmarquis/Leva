@@ -274,7 +274,8 @@ public class GoogleMapF extends Fragment implements LocationListener {
                 markerIndex = counter;
             }
         }
-        mMyMarkersArray.get(markerIndex).setmImage(image);
+        if (markerIndex >= 0)
+            mMyMarkersArray.get(markerIndex).setmImage(image);
 }
 
 

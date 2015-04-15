@@ -7,7 +7,6 @@
       <module fileurl="file://$PROJECT_DIR$/code.iml" filepath="$PROJECT_DIR$/code.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/libs/facebook/facebook.iml" filepath="$PROJECT_DIR$/app/libs/facebook/facebook.iml" />
       <module fileurl="file://$PROJECT_DIR$/libs/libs.iml" filepath="$PROJECT_DIR$/libs/libs.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/libs/libs.iml" filepath="$PROJECT_DIR$/app/libs/libs.iml" />
       <module fileurl="file://$PROJECT_DIR$/libs/Simple Facebook/libs-Simple Facebook.iml" filepath="$PROJECT_DIR$/libs/Simple Facebook/libs-Simple Facebook.iml" />
       <module fileurl="file://$PROJECT_DIR$/libs/facebook/libs-facebook.iml" filepath="$PROJECT_DIR$/libs/facebook/libs-facebook.iml" />
     </modules>

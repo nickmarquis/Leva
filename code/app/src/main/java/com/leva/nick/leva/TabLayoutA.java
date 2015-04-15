@@ -16,25 +16,19 @@ import com.leva.nick.leva.common.logger.LogWrapper;
 import com.leva.nick.leva.common.logger.MessageOnlyLogFilter;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.facebook.SessionDefaultAudience;
 import com.sromku.simple.fb.Permission;
 import com.sromku.simple.fb.SimpleFacebook;
 import com.sromku.simple.fb.SimpleFacebookConfiguration;
-import com.sromku.simple.fb.entities.Profile;
-import com.sromku.simple.fb.listeners.OnFriendsListener;
 import com.sromku.simple.fb.listeners.OnLoginListener;
-import com.sromku.simple.fb.listeners.OnProfileListener;
-import com.sromku.simple.fb.utils.Attributes;
-import com.sromku.simple.fb.utils.PictureAttributes;
 
 
 public class TabLayoutA extends SampleActivityBase {
 
     public static final String TAG = "TabLayout";
     private static final String APP_ID = "371005393088854";
-    private static final String APP_NAMESPACE = "leva";
+    private static final String APP_NAMESPACE = "leva_name";
 
     private SimpleFacebook mSimpleFacebook;
 
@@ -121,8 +115,6 @@ public class TabLayoutA extends SampleActivityBase {
 
     public void initMarkers() {
 
-//        FileOutputStream fout = new FileOutputStream(fileName);
-//        ObjectOutputStream out = new ObjectOutputStream(fout);
 
         mMyMarkersArray.add(new SpotsMarker("Blaxton", "ic_house", new LatLng(46.80283, -71.22465), "ic_blaxton", "Ceci est un resto/bar. Le Blaxon marche très bien le vendredi soir. Il y a deux étages et servent du popcorn ...................................................................................................................." ));
         mMyMarkersArray.add(new SpotsMarker("4 foyers", "ic_house", new LatLng(47.027088, -71.383312), "ic_4foyers", "Ceci est un resto/bar de ski. Le monde vont dans cette établissement le après un journée de ski ou simplement pour diner. Le vendredi soir le bar est plein et il ya a un band différent ....................................." ));
@@ -130,28 +122,7 @@ public class TabLayoutA extends SampleActivityBase {
         mMyMarkersArray.add(new SpotsMarker("Archibald", "ic_house", new LatLng(46.943319, -71.292171), "ic_archibald", "Ceci est un resto/bar" ));
         mMyMarkersArray.add(new SpotsMarker("Valcartier", "ic_house", new LatLng(47.018067, -71.473618), "ic_valcartier", "Ceci est un parc d'amusement" ));
         mMyMarkersArray.add(new SpotsMarker("Le Relais", "ic_house", new LatLng(46.940381, -71.299596), "ic_relais", "Ceci est centre de ski" ));
-
-//        for (int i = 0; i < 6; i++) {
-//
-//            out.writeObject(p1);
-//        }
-//
-//        out.writeObject(p1);
-//
-//        out.close();
-
-    }
-
-    public void addMarkers(String fileName, SpotsMarker marker) {
-
-        mMyMarkersArray.add(marker);
-
-//        FileOutputStream fout = new FileOutputStream(fileName);
-//        ObjectOutputStream out = new ObjectOutputStream(fout);
-//
-//        out.writeObject(marker);
-//
-//        out.close();
+        mMyMarkersArray.add(new SpotsMarker("Université Laval", "ic_house", new LatLng(46.780672, -71.274227), "ic_laval", "L'Université Laval a été la toute première université francophone à voir le jour en Amérique. En 1663, le premier évêque de la colonie, Mgr François de Montmorency-Laval, fonde à Québec le premier établissement d'enseignement de la Nouvelle-France: le Séminaire de Québec. Près de 200 ans plus tard, en 1852, cet établissement crée l'Université Laval, la source de tout l'enseignement supérieur de langue française au Québec, au Canada et en Amérique." ));
 
     }
 
@@ -161,8 +132,7 @@ public class TabLayoutA extends SampleActivityBase {
 
             @Override
             public void onLogin() {
-                //getFriendsList();
-                Toast.makeText(getApplication(), "Logged in", Toast.LENGTH_SHORT).show();
+                Log.i("facebook", "You are logged in");
             }
 
             @Override

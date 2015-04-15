@@ -724,7 +724,7 @@ public class CameraF extends Fragment implements View.OnClickListener {
 
                     tabHost.setCurrentTab(1);
 
-                    showToast("Saved: " + mFile);
+                    Log.i("Camera", "Saved: " + mFile);
 
                 }
             };
