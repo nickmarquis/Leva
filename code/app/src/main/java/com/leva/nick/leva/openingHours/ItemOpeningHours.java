@@ -1,4 +1,4 @@
-package com.leva.nick.leva.openingHours;
+package ca.ulaval.ima.miniproject.openingHours;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -56,7 +56,7 @@ public class ItemOpeningHours implements Parcelable {
         dest.writeString(timeClose);
     }
 
-    public static final Creator<ItemOpeningHours> CREATOR = new Creator<ItemOpeningHours>() {
+    public static final Parcelable.Creator<ItemOpeningHours> CREATOR = new Parcelable.Creator<ItemOpeningHours>() {
 
         @Override
         public ItemOpeningHours createFromParcel(Parcel source) {
@@ -76,7 +76,7 @@ public class ItemOpeningHours implements Parcelable {
         this.timeClose = in.readString();
     }
 
-    public static Creator<ItemOpeningHours> getCreator() {
+    public static Parcelable.Creator<ItemOpeningHours> getCreator() {
         return CREATOR;
     }
 }

@@ -24,4 +24,4 @@
     <item android:state_focused="true"                                                             android:drawable="@drawable/com_facebook_picker_list_focused" />
     <item                                                                                          android:drawable="@android:color/transparent" />
 </selector>
-<!-- From: file:/home/nick/Documents/Leva/code/facebook/res/drawable/com_facebook_picker_item_background.xml --><!-- From: file:/home/nick/Documents/Leva/code/Simple%20Facebook/build/intermediates/exploded-aar/code/facebook/unspecified/res/drawable/com_facebook_picker_item_background.xml -->
+<!-- From: file:/Users/davstpierre/Leva/code/facebook/res/drawable/com_facebook_picker_item_background.xml --><!-- From: file:/Users/davstpierre/Leva/code/Simple%20Facebook/build/intermediates/exploded-aar/code/facebook/unspecified/res/drawable/com_facebook_picker_item_background.xml -->

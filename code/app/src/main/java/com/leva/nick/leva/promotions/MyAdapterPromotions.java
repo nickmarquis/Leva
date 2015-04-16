@@ -1,4 +1,4 @@
-package com.leva.nick.leva.promotions;
+package ca.ulaval.ima.miniproject.promotions;
 
 import android.content.Context;
 import android.net.Uri;
@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import com.leva.nick.leva.R;
+import ca.ulaval.ima.miniproject.R;
 
 /**
  * Created by davstpierre on 15-03-14.

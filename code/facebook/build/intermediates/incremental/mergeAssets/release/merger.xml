@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="/home/nick/Documents/Leva/code/facebook/src/main/assets"/></dataSet><dataSet config="release"><source path="/home/nick/Documents/Leva/code/facebook/src/release/assets"/></dataSet></merger>
+<merger version="3"><dataSet config="main"><source path="/Users/davstpierre/Leva/code/facebook/src/main/assets"/></dataSet><dataSet config="release"><source path="/Users/davstpierre/Leva/code/facebook/src/release/assets"/></dataSet></merger>

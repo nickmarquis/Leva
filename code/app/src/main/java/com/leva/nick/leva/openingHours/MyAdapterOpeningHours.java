@@ -1,4 +1,4 @@
-package com.leva.nick.leva.openingHours;
+package ca.ulaval.ima.miniproject.openingHours;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import com.leva.nick.leva.R;
+import ca.ulaval.ima.miniproject.R;
 
 /**
  * Created by davstpierre on 15-04-06.

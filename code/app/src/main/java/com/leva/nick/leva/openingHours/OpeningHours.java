@@ -1,8 +1,8 @@
-package com.leva.nick.leva.openingHours;
+package ca.ulaval.ima.miniproject.openingHours;
 
 import android.graphics.Color;
-import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,10 +12,10 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
-import com.leva.nick.leva.R;
+import ca.ulaval.ima.miniproject.R;
 
-import static com.leva.nick.leva.dataManager.DataManager.readOpeningHours;
-import static com.leva.nick.leva.dataManager.DataManager.writeOpeningHours;
+import static ca.ulaval.ima.miniproject.dataManager.DataManager.readOpeningHours;
+import static ca.ulaval.ima.miniproject.dataManager.DataManager.writeOpeningHours;
 
 
 public class OpeningHours extends ActionBarActivity {

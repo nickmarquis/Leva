@@ -1,12 +1,13 @@
-package com.leva.nick.leva.promotions;
+package ca.ulaval.ima.miniproject.promotions;
 
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.media.Image;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,10 +18,10 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
-import com.leva.nick.leva.R;
+import ca.ulaval.ima.miniproject.R;
 
-import static com.leva.nick.leva.dataManager.DataManager.readPromotions;
-import static com.leva.nick.leva.dataManager.DataManager.writePromotions;
+import static ca.ulaval.ima.miniproject.dataManager.DataManager.readPromotions;
+import static ca.ulaval.ima.miniproject.dataManager.DataManager.writePromotions;
 
 
 public class PromotionEditList extends ActionBarActivity {
