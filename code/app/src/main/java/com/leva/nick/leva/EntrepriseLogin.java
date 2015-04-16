@@ -1,4 +1,4 @@
-package ca.ulaval.ima.miniproject;
+package com.leva.nick.leva;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -22,9 +22,9 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 
-import ca.ulaval.ima.miniproject.dataManager.DataManager;
+import com.leva.nick.leva.dataManager.DataManager;
 
-import static ca.ulaval.ima.miniproject.dataManager.DataManager.*;
+import static com.leva.nick.leva.dataManager.DataManager.*;
 
 
 public class EntrepriseLogin extends ActionBarActivity {
@@ -218,9 +218,6 @@ public class EntrepriseLogin extends ActionBarActivity {
             user = readEntrepriseAccountDetails(this, editTextUserName.getText().toString());
 
 
-            if (user.) {
-                return;
-            }
 
             Log.d("IMA", "---- User access granted.");
         } else {

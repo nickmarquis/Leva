@@ -1,4 +1,4 @@
-package ca.ulaval.ima.miniproject.openingHours;
+package com.leva.nick.leva.openingHours;
 
 import android.os.Parcel;
 import android.os.Parcelable;

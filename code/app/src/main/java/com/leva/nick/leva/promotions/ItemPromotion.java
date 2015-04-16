@@ -1,4 +1,4 @@
-package ca.ulaval.ima.miniproject.promotions;
+package com.leva.nick.leva.promotions;
 
 import android.os.Parcel;
 import android.os.Parcelable;

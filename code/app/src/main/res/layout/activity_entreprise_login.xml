@@ -1,0 +1,164 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.leva.nick.leva.EntrepriseLogin">
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Me connecter à mon compte d&apos;entreprise."
+        android:id="@+id/buttonConnect"
+        android:layout_below="@+id/editTextPassword"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:enabled="true"
+        android:onClick="connectionAction" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/editTextUserName"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:hint="Nom d&apos;utilisateur"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/editTextPassword"
+        android:layout_below="@+id/editTextUserName"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:hint="Mot de passe"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Je n&apos;ai pas de compte."
+        android:id="@+id/buttonNoAccount"
+        android:layout_below="@+id/buttonConnect"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/buttonConnect"
+        android:layout_alignEnd="@+id/buttonConnect"
+        android:onClick="showAddingFields" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/editTextUserNameNew"
+        android:hint="Nom d&apos;utilisateur"
+        android:layout_below="@+id/buttonNoAccount"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/editTextPasswordNew"
+        android:layout_below="@+id/editTextUserNameNew"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:hint="Mot de passe"
+        android:layout_alignRight="@+id/editTextUserNameNew"
+        android:layout_alignEnd="@+id/editTextUserNameNew" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/editTextPasswordNewVerification"
+        android:layout_below="@+id/editTextPasswordNew"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:hint="Répéter le mot de passe" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPostalAddress"
+        android:ems="10"
+        android:id="@+id/editTextAddress"
+        android:layout_below="@+id/editTextPasswordNewVerification"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:hint="Adresse"
+        android:layout_alignRight="@+id/editTextPasswordNewVerification"
+        android:layout_alignEnd="@+id/editTextPasswordNewVerification" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:ems="10"
+        android:id="@+id/editTextPhoneNumber"
+        android:layout_below="@+id/editTextAddress"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:hint="Numéro de téléphone"
+        android:layout_alignRight="@+id/editTextAddress"
+        android:layout_alignEnd="@+id/editTextAddress" />
+
+    <ImageButton
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/imageButtonLogo"
+        android:nestedScrollingEnabled="false"
+        android:onClick="chooseLogoFromLibrary"
+        android:layout_below="@+id/editTextPhoneNumber"
+        android:layout_alignRight="@+id/editTextPhoneNumber"
+        android:layout_alignEnd="@+id/editTextPhoneNumber"
+        android:layout_above="@+id/buttonCreateAccount" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Création de mon profil d&apos;entreprise."
+        android:id="@+id/buttonCreateAccount"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/imageButtonLogo"
+        android:layout_alignEnd="@+id/imageButtonLogo"
+        android:onClick="createAccount" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editTextDescription"
+        android:layout_alignTop="@+id/imageButtonLogo"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignBottom="@+id/imageButtonLogo"
+        android:layout_toLeftOf="@+id/imageButtonLogo"
+        android:layout_toStartOf="@+id/imageButtonLogo"
+        android:maxLines="3"
+        android:hint="Description de l&apos;entreprise"/>
+
+</RelativeLayout>

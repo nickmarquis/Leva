@@ -68,6 +68,7 @@
         <activity
             android:name=".EntrepriseLogin"
             android:label="@string/title_activity_entreprise_login" >
+        </activity>
         <activity
             android:name="com.facebook.LoginActivity"
             android:label="@string/app_name"
