@@ -22,7 +22,6 @@ import java.util.ArrayList;
 public class DataManager {
 
     public static void writeOpeningHours(Context context, ArrayList<ItemOpeningHours> listToWrite) {
-        ArrayList<ItemOpeningHours> temp = new ArrayList<ItemOpeningHours>();
         String filename = context.getFilesDir().getPath().toString() + "/OpeningHours.txt";
 
         try {

@@ -1,12 +1,8 @@
-package com.leva.nick.leva.dataManager;
+package ca.ulaval.ima.miniproject.dataManager;
 
 
 import android.content.Context;
 import android.util.Log;
-
-import com.leva.nick.leva.openingHours.ItemOpeningHours;
-import com.leva.nick.leva.promotions.ItemPromotion;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -16,13 +12,16 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 
+import ca.ulaval.ima.miniproject.openingHours.ItemOpeningHours;
+import ca.ulaval.ima.miniproject.openingHours.OpeningHours;
+import ca.ulaval.ima.miniproject.promotions.ItemPromotion;
+
 /**
  * Created by davstpierre on 15-04-06.
  */
 public class DataManager {
 
     public static void writeOpeningHours(Context context, ArrayList<ItemOpeningHours> listToWrite) {
-        ArrayList<ItemOpeningHours> temp = new ArrayList<ItemOpeningHours>();
         String filename = context.getFilesDir().getPath().toString() + "/OpeningHours.txt";
 
         try {
@@ -107,7 +106,7 @@ public class DataManager {
 
             for (int i = 0 ; i < 7 ; i++) {
                 readList.add(new ItemPromotion(input.readLine(), input.readLine(), input.readLine(),
-                        input.readLine(), input.readLine(), input.readLine()));
+                                               input.readLine(), input.readLine(), input.readLine()));
             }
 
             Log.d("IMA", " Fichier lu ");
