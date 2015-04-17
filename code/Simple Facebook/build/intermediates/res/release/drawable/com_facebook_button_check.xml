@@ -18,4 +18,4 @@
   <item android:state_checked="true" android:drawable="@drawable/com_facebook_button_check_on" />
   <item android:drawable="@drawable/com_facebook_button_check_off" />
 </selector>
-<!-- From: file:/Users/davstpierre/Leva/code/facebook/res/drawable/com_facebook_button_check.xml --><!-- From: file:/Users/davstpierre/Leva/code/Simple%20Facebook/build/intermediates/exploded-aar/code/facebook/unspecified/res/drawable/com_facebook_button_check.xml -->
+<!-- From: file:/Users/davstpierre/Leva/code/facebook/res/drawable/com_facebook_button_check.xml --><!-- From: file:/home/nick/Documents/Leva/code/Simple%20Facebook/build/intermediates/exploded-aar/code/facebook/unspecified/res/drawable/com_facebook_button_check.xml -->
