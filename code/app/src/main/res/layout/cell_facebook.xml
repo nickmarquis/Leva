@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minHeight="60dp"
+    android:orientation="horizontal"
+    android:weightSum="1"
+    android:id="@+id/cell"
+    android:background="#ff0071bc">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageFcell"
+        android:contentDescription="image"
+        android:minHeight="80dp"
+        android:minWidth="80dp"
+        android:layout_weight="0.2"
+        android:layout_gravity="center_vertical" />
+
+    <TextView
+        android:id="@+id/nameFcell"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0.8"
+        android:textStyle="bold"
+        android:layout_marginLeft="20dp" />
+
+</LinearLayout>

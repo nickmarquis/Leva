@@ -1,6 +1,7 @@
 package com.leva.nick.leva;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,8 +13,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.leva.nick.leva.common.logger.Log;
@@ -31,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -65,6 +69,8 @@ public class FacebookF extends Fragment {
         super.onCreate(savedInstanceState);
 
         mSimpleFacebook = SimpleFacebook.getInstance();
+
+
 
     }
 
@@ -157,6 +163,9 @@ public class FacebookF extends Fragment {
             public void onComplete(List<Profile> friends) {
                 Log.i("Facebook", "Number of friends = " + friends.size());
                 mFriends = friends;
+                ProfileAdapter adapter = new ProfileAdapter(getActivity(), (ArrayList)mFriends);
+                ListView list = (ListView) getView().findViewById((R.id.friendListF));
+                list.setAdapter(adapter);
             }
         };
 
@@ -245,18 +254,93 @@ public class FacebookF extends Fragment {
         mSimpleFacebook.getProfile(properties, onProfileListener);
     }
 
-//    public static Bitmap getFacebookProfilePicture(String userID) {
-//        Bitmap bitmap;
-//        try {
-//            URL imageURL = new URL("https://graph.facebook.com/" + userID + "/picture?type=large");
-//            bitmap = BitmapFactory.decodeStream(imageURL.openConnection().getInputStream());
-//
-//        } catch (Exception e) {
-//            return null;
-//        }
-//
-//        return bitmap;
-//    }
+    static public class ProfileAdapter extends ArrayAdapter<Profile> {
 
+        private ArrayList<Profile> mProfileList;
+        private Activity mActivity;
+        private ViewHolder mViewHolder;
+
+        public ProfileAdapter(Activity inActivity, ArrayList<Profile> inEntryList){
+            super(inActivity, R.layout.cell_facebook    , inEntryList);
+            this.mActivity = inActivity;
+            mProfileList = inEntryList;
+
+        }
+
+        public void addEntry(Profile outItem){
+            mProfileList.add(outItem);
+        }
+
+        @Override
+        public int getCount() {
+            return mProfileList.size();
+        }
+
+        @Override
+        public Profile getItem(int arg0) {
+            return mProfileList.get(arg0);
+        }
+
+        @Override
+        public long getItemId(int arg0) {
+            return arg0;
+        }
+
+        static class ViewHolder {
+            public ImageView image;
+            public TextView name;
+        }
+
+        @Override
+        public View getView(int arg0, View arg1, ViewGroup arg2) {
+
+            View childView = arg1;
+            if(childView == null || childView.getTag() == null){
+
+                childView = mActivity.getLayoutInflater().inflate(R.layout.cell_facebook, null);
+
+                ViewHolder viewHolder = new ViewHolder();
+
+                viewHolder.image = (ImageView) childView.findViewById(R.id.imageFcell);
+                viewHolder.name = (TextView) childView.findViewById(R.id.nameFcell);
+
+                childView.setTag(viewHolder);
+            }
+            final ImageView image = (ImageView) childView.findViewById(R.id.imageFcell);
+
+            AsyncTask<String, Void, Bitmap> t = new AsyncTask<String, Void, Bitmap>() {
+                protected Bitmap doInBackground(String... p) {
+                    Bitmap bm = null;
+                    try {
+                        URL aURL = new URL(p[0]);
+                        URLConnection conn = aURL.openConnection();
+                        conn.setUseCaches(true);
+                        conn.connect();
+                        InputStream is = conn.getInputStream();
+                        BufferedInputStream bis = new BufferedInputStream(is);
+                        bm = BitmapFactory.decodeStream(bis);
+                        bis.close();
+                        is.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return bm;
+                }
+
+                protected void onPostExecute(Bitmap bm){
+
+                    image.setImageBitmap(bm);
+
+                }
+            };
+            t.execute(mProfileList.get(arg0).getPicture());
+
+            ViewHolder holder = (ViewHolder) childView.getTag();
+            holder.name.setText(mProfileList.get(arg0).getFirstName() + " " + mProfileList.get(arg0).getLastName());
+
+            return childView;
+        }
+
+    }
 
 }
