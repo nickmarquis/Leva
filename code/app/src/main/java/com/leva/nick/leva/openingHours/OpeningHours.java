@@ -1,5 +1,6 @@
 package com.leva.nick.leva.openingHours;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -20,13 +21,15 @@ import static com.leva.nick.leva.dataManager.DataManager.readOpeningHours;
 import static com.leva.nick.leva.dataManager.DataManager.writeOpeningHours;
 
 
-public class OpeningHours extends ActionBarActivity {
+public class OpeningHours extends Activity {
 
     ArrayList<ItemOpeningHours> items = new ArrayList<>();
 
     private String[] dayOfWeek = {"Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"};
 
     Button button;
+
+    private String mUsername;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +56,10 @@ public class OpeningHours extends ActionBarActivity {
         });
 
         button = (Button) findViewById(R.id.buttonAdd);
+
+
+
+        mUsername = getIntent().getExtras().getString("username");
     }
 
     private ArrayList<ItemOpeningHours> generateData() {

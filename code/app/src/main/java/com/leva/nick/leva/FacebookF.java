@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.leva.nick.leva.common.logger.Log;
 import com.sromku.simple.fb.SimpleFacebook;
+import com.sromku.simple.fb.entities.Image;
 import com.sromku.simple.fb.entities.Profile;
 import com.sromku.simple.fb.listeners.OnFriendsListener;
 import com.sromku.simple.fb.listeners.OnLogoutListener;
@@ -46,7 +47,6 @@ public class FacebookF extends Fragment {
 
     ImageView mProfileImg;
     TextView mProfileNom;
-
 
     public static FacebookF newInstance(CharSequence title) {
 
@@ -80,6 +80,7 @@ public class FacebookF extends Fragment {
         mProfileImg = (ImageView) view.findViewById(R.id.imageF);
         mProfileNom = (TextView) view.findViewById(R.id.nomF);
         ImageButton settings = (ImageButton) view.findViewById(R.id.settingsB);
+        ImageButton enterpriseLogin = (ImageButton) view.findViewById(R.id.settingsE);
 
         settings.setOnClickListener(new ImageButton.OnClickListener() {
             public void onClick(View v) {
@@ -108,6 +109,23 @@ public class FacebookF extends Fragment {
                 };
                 mSimpleFacebook.logout(onLogoutListener);
             }
+        });
+
+        enterpriseLogin.setOnClickListener(new ImageButton.OnClickListener() {
+            public void onClick(View v) {
+//                View.OnClickListener onClickListener = new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        Log.i("IMA", "Starting the + Enterprise profile...");
+//                        Intent myIntent = new Intent(getActivity(), com.leva.nick.leva.EntrepriseLogin.class);
+//                        startActivity(myIntent);
+//                    }
+//                };
+                Log.d("IMA", "------- ICI");
+                Intent intent = new Intent(getActivity(), EntrepriseLogin.class);
+                getActivity().startActivity(intent);
+            }
+
         });
 
 

@@ -1,12 +1,12 @@
 package com.leva.nick.leva;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
-import android.provider.MediaStore;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,33 +14,28 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
+import android.widget.Toast;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 
-import com.leva.nick.leva.dataManager.DataManager;
+import static com.leva.nick.leva.dataManager.DataManager.readEntrepriseAccountDetails;
+import static com.leva.nick.leva.dataManager.DataManager.writeEntrepriseAccountDetails;
 
-import static com.leva.nick.leva.dataManager.DataManager.*;
 
+public class EntrepriseLogin extends Activity {
 
-public class EntrepriseLogin extends ActionBarActivity {
-
-    private EditText    editTextUserName;
-    private EditText    editTextPassword;
-    private Button      buttonConnect;
-    private Button      buttonNoAccount;
-    private EditText    editTextUserNameNew;
-    private EditText    editTextPasswordNew;
-    private EditText    editTextPasswordNewVerification;
-    private EditText    editTextAddress;
-    private EditText    editTextPhoneNumber;
-    private EditText    editTextDescription;
+    private EditText editTextUserName;
+    private EditText editTextPassword;
+    private Button buttonConnect;
+    private Button buttonNoAccount;
+    private EditText editTextUserNameNew;
+    private EditText editTextPasswordNew;
+    private EditText editTextPasswordNewVerification;
+    private EditText editTextAddress;
+    private EditText editTextPhoneNumber;
+    private EditText editTextDescription;
     private ImageButton imageButtonLogo;
-    private Button      buttonCreateAccount;
+    private Button buttonCreateAccount;
 
     private int SELECT_PICTURE = 1;
     private String selectedImagePath;
@@ -116,10 +111,10 @@ public class EntrepriseLogin extends ActionBarActivity {
     public boolean checkFieldsNewAccount() {
 
         if (editTextUserNameNew.getText().toString().equals("") ||
-            editTextPasswordNew.getText().toString().equals("") ||
-            editTextPasswordNewVerification.getText().toString().equals("") ||
-            editTextAddress.getText().toString().equals("") ||
-            editTextDescription.getText().toString().equals("")) {
+                editTextPasswordNew.getText().toString().equals("") ||
+                editTextPasswordNewVerification.getText().toString().equals("") ||
+                editTextAddress.getText().toString().equals("") ||
+                editTextDescription.getText().toString().equals("")) {
             buttonCreateAccount.setTextColor(new Color().RED);
             return false;
         } else {
@@ -151,7 +146,16 @@ public class EntrepriseLogin extends ActionBarActivity {
 
             Log.d("IMA", "------ Wrote the information");
 
-            // TODO Start intent to an other view (like the Opening hours list)
+            Toast.makeText(getApplicationContext(), "Connectez-vous avec votre nouveau profil !", Toast.LENGTH_LONG).show();
+
+            editTextUserNameNew.setVisibility(View.INVISIBLE);
+            editTextPasswordNew.setVisibility(View.INVISIBLE);
+            editTextPasswordNewVerification.setVisibility(View.INVISIBLE);
+            editTextAddress.setVisibility(View.INVISIBLE);
+            editTextPhoneNumber.setVisibility(View.INVISIBLE);
+            editTextDescription.setVisibility(View.INVISIBLE);
+            imageButtonLogo.setVisibility(View.INVISIBLE);
+            buttonCreateAccount.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -210,20 +214,21 @@ public class EntrepriseLogin extends ActionBarActivity {
             // readEntrepriseAccountDetails(this, editTextUserName.getText().toString()).get(0).toString().equalsIgnoreCase(editTextUserName.getText().toString());
 
 
-            // On regarde si l'utilisateur entré est présent dans le fichier de login.
-
-            //String user = readEntrepriseAccountDetails(this, editTextUserName.getText().toString()).get(0).toString();
             ArrayList<String> user = new ArrayList<String>();
+
+            Log.d("IMA", "---- User access in progress.");
 
             user = readEntrepriseAccountDetails(this, editTextUserName.getText().toString());
 
-
-
-            Log.d("IMA", "---- User access granted.");
+            if (user.get(0).equalsIgnoreCase(editTextUserName.getText().toString())) {
+                Toast.makeText(getApplicationContext(), "Connecté en tant que " + editTextUserName.getText().toString(), Toast.LENGTH_LONG).show();
+                Log.d("IMA", "---- User access granted.");
+                Intent intent = new Intent(getApplicationContext(), connectedEnterprise.class);
+                intent.putExtra("username", editTextUserName.getText().toString());
+                startActivity(intent);
+            }
         } else {
             Log.d("IMA", "---- User unknown.");
         }
     }
-
-
 }

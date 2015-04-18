@@ -18,6 +18,8 @@ import com.leva.nick.leva.common.logger.MessageOnlyLogFilter;
 import java.util.ArrayList;
 
 import com.facebook.SessionDefaultAudience;
+import com.leva.nick.leva.openingHours.ItemOpeningHours;
+import com.leva.nick.leva.promotions.ItemPromotion;
 import com.sromku.simple.fb.Permission;
 import com.sromku.simple.fb.SimpleFacebook;
 import com.sromku.simple.fb.SimpleFacebookConfiguration;
@@ -115,14 +117,33 @@ public class TabLayoutA extends SampleActivityBase {
 
     public void initMarkers() {
 
+        ArrayList<ItemOpeningHours> itemOpeningHoursArrayList = new ArrayList<>();
 
-        mMyMarkersArray.add(new SpotsMarker("Blaxton", "ic_house", new LatLng(46.80283, -71.22465), "ic_blaxton", "Ceci est un resto/bar. Le Blaxon marche très bien le vendredi soir. Il y a deux étages et servent du popcorn ...................................................................................................................." ));
-        mMyMarkersArray.add(new SpotsMarker("4 foyers", "ic_house", new LatLng(47.027088, -71.383312), "ic_4foyers", "Ceci est un resto/bar de ski. Le monde vont dans cette établissement le après un journée de ski ou simplement pour diner. Le vendredi soir le bar est plein et il ya a un band différent ....................................." ));
-        mMyMarkersArray.add(new SpotsMarker("Maurice", "ic_house", new LatLng(46.805820, -71.216991), "ic_maurice", "Ceci est un club" ));
-        mMyMarkersArray.add(new SpotsMarker("Archibald", "ic_house", new LatLng(46.943319, -71.292171), "ic_archibald", "Ceci est un resto/bar" ));
-        mMyMarkersArray.add(new SpotsMarker("Valcartier", "ic_house", new LatLng(47.018067, -71.473618), "ic_valcartier", "Ceci est un parc d'amusement" ));
-        mMyMarkersArray.add(new SpotsMarker("Le Relais", "ic_house", new LatLng(46.940381, -71.299596), "ic_relais", "Ceci est centre de ski" ));
-        mMyMarkersArray.add(new SpotsMarker("Université Laval", "ic_house", new LatLng(46.780672, -71.274227), "ic_laval", "L'Université Laval a été la toute première université francophone à voir le jour en Amérique. En 1663, le premier évêque de la colonie, Mgr François de Montmorency-Laval, fonde à Québec le premier établissement d'enseignement de la Nouvelle-France: le Séminaire de Québec. Près de 200 ans plus tard, en 1852, cet établissement crée l'Université Laval, la source de tout l'enseignement supérieur de langue française au Québec, au Canada et en Amérique." ));
+        itemOpeningHoursArrayList.add(0, new ItemOpeningHours("Lundi", "16", "23"));
+        itemOpeningHoursArrayList.add(1, new ItemOpeningHours("Mardi", "16", "23"));
+        itemOpeningHoursArrayList.add(2, new ItemOpeningHours("Mercredi", "16", "23"));
+        itemOpeningHoursArrayList.add(3, new ItemOpeningHours("Jeudi", "16", "23"));
+        itemOpeningHoursArrayList.add(4, new ItemOpeningHours("Vendredi", "16", "23"));
+        itemOpeningHoursArrayList.add(5, new ItemOpeningHours("Samedi", "16", "23"));
+        itemOpeningHoursArrayList.add(6, new ItemOpeningHours("Dimanche", "16", "23"));
+
+        ArrayList<ItemPromotion> itemPromotionsArrayList = new ArrayList<>();
+
+        itemPromotionsArrayList.add(0, new ItemPromotion("Lundi", "Lundis Woks", "5$ de rabais sur tous les woks. Consommation sur place. Taxes en sus.", "17", "23", null));
+        itemPromotionsArrayList.add(1, new ItemPromotion("Mardi", "Mardis Burgers", "5$ de rabais sur tous les woks. Consommation sur place. Taxes en sus.", "17", "23", null));
+        itemPromotionsArrayList.add(2, new ItemPromotion("Mercredi", "Spéciaux 5 à 8", "5$ de rabais sur tous les woks. Consommation sur place. Taxes en sus.", "17", "20", null));
+        itemPromotionsArrayList.add(3, new ItemPromotion("Jeudi", "Spéciaux 5 à 8", "Rabais sur Alexander Keith's (blanche, blonde, rousse)", "17", "20", null));
+        itemPromotionsArrayList.add(4, new ItemPromotion("Vendredi", "Spéciaux 5 à 8", "Rabais sur Alexander Keith's (blanche, blonde, rousse)", "17", "20", null));
+        itemPromotionsArrayList.add(5, new ItemPromotion("Samedi", "Spéciaux 5 à 8", "Rabais sur Alexander Keith's (blanche, blonde, rousse)", "17", "20", null));
+        itemPromotionsArrayList.add(6, new ItemPromotion("Dimanche", "Spéciaux 5 à 8", "Rabais sur Alexander Keith's (blanche, blonde, rousse)", "17", "20", null));
+
+        mMyMarkersArray.add(new SpotsMarker("Blaxton", "ic_house", new LatLng(46.80283, -71.22465), "ic_blaxton", itemOpeningHoursArrayList, itemPromotionsArrayList));
+        mMyMarkersArray.add(new SpotsMarker("4 foyers", "ic_house", new LatLng(47.027088, -71.383312), "ic_4foyers", itemOpeningHoursArrayList, itemPromotionsArrayList));
+        mMyMarkersArray.add(new SpotsMarker("Maurice", "ic_house", new LatLng(46.805820, -71.216991), "ic_maurice", itemOpeningHoursArrayList, itemPromotionsArrayList));
+        mMyMarkersArray.add(new SpotsMarker("Archibald", "ic_house", new LatLng(46.943319, -71.292171), "ic_archibald", itemOpeningHoursArrayList, itemPromotionsArrayList));
+        mMyMarkersArray.add(new SpotsMarker("Valcartier", "ic_house", new LatLng(47.018067, -71.473618), "ic_valcartier", itemOpeningHoursArrayList, itemPromotionsArrayList));
+        mMyMarkersArray.add(new SpotsMarker("Le Relais", "ic_house", new LatLng(46.940381, -71.299596), "ic_relais", itemOpeningHoursArrayList, itemPromotionsArrayList));
+        mMyMarkersArray.add(new SpotsMarker("Université Laval", "ic_house", new LatLng(46.780672, -71.274227), "ic_laval", itemOpeningHoursArrayList, itemPromotionsArrayList));
 
     }
 

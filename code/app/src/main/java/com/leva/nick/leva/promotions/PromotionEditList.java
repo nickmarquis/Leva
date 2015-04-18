@@ -1,5 +1,6 @@
 package com.leva.nick.leva.promotions;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -24,7 +25,7 @@ import static com.leva.nick.leva.dataManager.DataManager.readPromotions;
 import static com.leva.nick.leva.dataManager.DataManager.writePromotions;
 
 
-public class PromotionEditList extends ActionBarActivity {
+public class PromotionEditList extends Activity {
 
     ListView listView;
     ArrayList<ItemPromotion> items = new ArrayList<ItemPromotion>();
@@ -41,6 +42,7 @@ public class PromotionEditList extends ActionBarActivity {
     private int mImageToAdd = 0;
     Button button;
 
+    String mUsername;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +70,8 @@ public class PromotionEditList extends ActionBarActivity {
         });
 
         button = (Button) findViewById(R.id.buttonAdd);
+
+        mUsername = getIntent().getExtras().getString("username");
     }
 
     private ArrayList<ItemPromotion> generateData(){

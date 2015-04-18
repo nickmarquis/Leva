@@ -28,7 +28,29 @@ public class SpotDescriptionA extends Activity {
         int drawableResourceId = this.getResources().getIdentifier(mSpot.getmPicture(), "drawable", this.getPackageName());
         image.setImageResource(drawableResourceId);
         tilte.setText(mSpot.getmLabel());
-        desc.setText(mSpot.getmDescription());
+        //desc.setText(mSpot.getmDescription());
+
+        String generalString = new String();
+
+        generalString += "HEURES D'OUVERTURE\n";
+
+        for (int i = 0; i < 7 ; i++) {
+            generalString += mSpot.getmOpeningHours().get(i).getDay().toString() + " : " +
+                mSpot.getmOpeningHours().get(i).getTimeOpen().toString() + " à " +
+                mSpot.getmOpeningHours().get(i).getTimeClose().toString() + "\n";
+        }
+
+        generalString += "\nPROMOTIONS \n";
+
+        for (int i = 0 ; i < 7 ; i++) {
+            generalString += mSpot.getmPromotions().get(i).getDay().toString() + " : " +
+                mSpot.getmPromotions().get(i).getPromotionName().toString() + "\n     " +
+                mSpot.getmPromotions().get(i).getPromotionDescription().toString() + "\n     " +
+                "Valide de " + mSpot.getmPromotions().get(i).getTimeStart().toString() + " à " +
+                mSpot.getmPromotions().get(i).getTimeEnd().toString() + "\n\n";
+        }
+
+        desc.setText(generalString);
     }
 
 
